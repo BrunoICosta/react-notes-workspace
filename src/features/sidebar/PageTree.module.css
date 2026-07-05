@@ -1,0 +1,130 @@
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: var(--space-2) var(--space-3);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.item {
+  position: relative;
+}
+
+.row {
+  --depth: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 30px;
+  margin: 1px var(--space-2);
+  padding-left: calc(var(--depth) * 14px + 2px);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition: background-color var(--duration-fast) ease;
+}
+
+.row:hover,
+.row:focus-within {
+  background: var(--color-bg-hover);
+}
+
+.row[data-active] {
+  background: var(--color-bg-active);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.toggle,
+.action {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.toggle:hover:not(:disabled),
+.action:hover,
+.action[aria-expanded='true'] {
+  background: var(--color-bg-active);
+  color: var(--color-text);
+}
+
+.toggle:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.toggle svg {
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.toggle[data-expanded] svg {
+  transform: rotate(90deg);
+}
+
+.link {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  height: 30px;
+  padding: 0 var(--space-1);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  font-weight: inherit;
+  text-align: left;
+}
+
+.icon {
+  flex: none;
+  width: 20px;
+  font-size: 15px;
+  line-height: 1;
+  text-align: center;
+}
+
+.title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.title[data-untitled] {
+  color: var(--color-text-placeholder);
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  gap: 1px;
+  padding-right: 4px;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+}
+
+.row:hover .actions,
+.row:focus-within .actions,
+.actions:has([aria-expanded='true']) {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .actions {
+    opacity: 1;
+  }
+}
