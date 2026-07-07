@@ -1,5 +1,5 @@
 import type { Page } from '../workspace/model/types';
-import { pageTitle } from '../workspace/store/selectors';
+import { PageTitle } from './PageTitle';
 import styles from './PageView.module.css';
 
 interface PageViewProps {
@@ -13,7 +13,8 @@ export function PageView({ page }: PageViewProps) {
         <span className={styles.icon} aria-hidden="true">
           {page.icon}
         </span>
-        <h1 className={styles.title}>{pageTitle(page)}</h1>
+        <h1 className="visually-hidden">{page.title.trim() || 'Sem título'}</h1>
+        <PageTitle pageId={page.id} title={page.title} />
       </header>
     </article>
   );

@@ -18,9 +18,21 @@
 }
 
 .title {
+  display: block;
+  width: 100%;
   margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  resize: none;
+  outline: none;
   font-size: 40px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
+}
+
+.title::placeholder {
+  color: var(--color-text-placeholder);
 }
