@@ -3,9 +3,9 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { createId } from '../../../shared/lib/createId';
 import * as tree from '../model/tree';
 import type { WorkspaceData } from '../model/types';
+import { migrateWorkspace, sanitizeWorkspace, WORKSPACE_SCHEMA_VERSION } from './migrations';
 
 export const WORKSPACE_STORAGE_KEY = 'notes-workspace:data';
-export const WORKSPACE_STORAGE_VERSION = 1;
 
 export interface CreatePageOptions {
   parentId?: string | null;
@@ -19,6 +19,7 @@ export interface WorkspaceActions {
   createPage: (options?: CreatePageOptions) => string;
   renamePage: (id: string, title: string) => void;
   setPageIcon: (id: string, icon: string) => void;
+  toggleFavorite: (id: string) => void;
   toggleCollapsed: (id: string) => void;
   deletePage: (id: string) => void;
   indentPage: (id: string) => void;
@@ -53,6 +54,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       },
       renamePage: (id, title) => set((state) => tree.updatePage(state, id, { title }, Date.now())),
       setPageIcon: (id, icon) => set((state) => tree.updatePage(state, id, { icon }, Date.now())),
+      toggleFavorite: (id) => set((state) => tree.toggleFavorite(state, id)),
       toggleCollapsed: (id) => set((state) => tree.toggleCollapsed(state, id)),
       deletePage: (id) => set((state) => tree.deletePage(state, id)),
       indentPage: (id) => set((state) => tree.indentPage(state, id)),
@@ -61,9 +63,13 @@ export const useWorkspaceStore = create<WorkspaceState>()(
     }),
     {
       name: WORKSPACE_STORAGE_KEY,
-      version: WORKSPACE_STORAGE_VERSION,
+      version: WORKSPACE_SCHEMA_VERSION,
       storage: createJSONStorage(() => localStorage),
       partialize: selectWorkspaceData,
+      migrate: (persisted, version) => migrateWorkspace(persisted, version),
+      // Sanitize on every hydration so hand-edited or corrupted storage cannot crash the app.
+      merge: (persisted, current) =>
+        persisted === undefined ? current : { ...current, ...sanitizeWorkspace(persisted) },
     },
   ),
 );

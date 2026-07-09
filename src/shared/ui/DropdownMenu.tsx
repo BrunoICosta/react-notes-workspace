@@ -1,14 +1,15 @@
 import {
   useCallback,
-  useEffect,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useAnchoredPosition, useDismiss } from '../hooks/useFloating';
 import { Icon, type IconName } from './Icon';
 import styles from './DropdownMenu.module.css';
 
@@ -29,13 +30,7 @@ interface DropdownMenuProps {
   triggerContent: ReactNode;
 }
 
-interface Position {
-  top: number;
-  left: number;
-}
-
 const MENU_WIDTH = 220;
-const VIEWPORT_GUTTER = 8;
 
 /**
  * Menu button following the WAI-ARIA menu pattern: arrow keys move between items,
@@ -48,46 +43,24 @@ export function DropdownMenu({
   triggerContent,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
-  const [position, setPosition] = useState<Position>({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
+  const position = useAnchoredPosition(open, triggerRef, menuRef);
+  const dismissRefs = useMemo(() => [triggerRef, menuRef], []);
 
   const close = useCallback((restoreFocus = true) => {
     setOpen(false);
     if (restoreFocus) triggerRef.current?.focus();
   }, []);
+  const dismiss = useCallback(() => close(false), [close]);
+  useDismiss(open, dismissRefs, dismiss);
 
   useLayoutEffect(() => {
-    if (!open || !triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    const menuHeight = menuRef.current?.offsetHeight ?? 0;
-    const fitsBelow = rect.bottom + menuHeight + VIEWPORT_GUTTER <= window.innerHeight;
-    setPosition({
-      top: fitsBelow ? rect.bottom + 4 : Math.max(VIEWPORT_GUTTER, rect.top - menuHeight - 4),
-      left: Math.max(
-        VIEWPORT_GUTTER,
-        Math.min(rect.left, window.innerWidth - MENU_WIDTH - VIEWPORT_GUTTER),
-      ),
-    });
-    menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]:not([disabled])')?.focus();
+    if (open) {
+      menuRef.current?.querySelector<HTMLElement>('[role="menuitem"]:not([disabled])')?.focus();
+    }
   }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (menuRef.current?.contains(target) || triggerRef.current?.contains(target)) return;
-      close(false);
-    };
-    const handleResize = () => close(false);
-    document.addEventListener('pointerdown', handlePointerDown);
-    window.addEventListener('resize', handleResize);
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [open, close]);
 
   const handleMenuKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const enabled = Array.from(

@@ -31,6 +31,8 @@ export interface Page {
   /** Ordered ids of the direct children. */
   childIds: string[];
   blocks: Block[];
+  /** Pinned to the Favorites section of the sidebar. */
+  favorite: boolean;
   /** Whether the children are hidden in the sidebar tree. */
   collapsed: boolean;
   createdAt: number;

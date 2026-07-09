@@ -22,6 +22,7 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
   const toggleCollapsed = useWorkspaceStore((state) => state.toggleCollapsed);
   const createPage = useWorkspaceStore((state) => state.createPage);
   const renamePage = useWorkspaceStore((state) => state.renamePage);
+  const toggleFavorite = useWorkspaceStore((state) => state.toggleFavorite);
   const indentPage = useWorkspaceStore((state) => state.indentPage);
   const outdentPage = useWorkspaceStore((state) => state.outdentPage);
   const requestDeletePage = useUiStore((state) => state.requestDeletePage);
@@ -40,6 +41,12 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
       label: 'Adicionar subpágina',
       icon: 'plus',
       onSelect: () => createPage({ parentId: pageId }),
+    },
+    {
+      id: 'favorite',
+      label: page.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+      icon: 'star',
+      onSelect: () => toggleFavorite(pageId),
     },
     {
       id: 'indent',

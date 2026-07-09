@@ -26,6 +26,7 @@ export function createPage(input: NewPageInput): Page {
     parentId: input.parentId ?? null,
     childIds: [],
     blocks: input.blocks ?? [],
+    favorite: false,
     collapsed: false,
     createdAt: input.now,
     updatedAt: input.now,
@@ -82,6 +83,23 @@ export function toggleCollapsed(ws: WorkspaceData, id: string): WorkspaceData {
   return produce(ws, (draft) => {
     draft.pages[id].collapsed = !draft.pages[id].collapsed;
   });
+}
+
+export function toggleFavorite(ws: WorkspaceData, id: string): WorkspaceData {
+  if (!ws.pages[id]) return ws;
+  return produce(ws, (draft) => {
+    draft.pages[id].favorite = !draft.pages[id].favorite;
+  });
+}
+
+/** Ids of all pages in tree order (depth-first), regardless of collapsed state. */
+export function getTreeOrder(ws: WorkspaceData): string[] {
+  return ws.rootIds.flatMap((id) => [id, ...getDescendantIds(ws, id)]);
+}
+
+/** Favorite pages ordered as they appear in the tree. */
+export function getFavoriteIds(ws: WorkspaceData): string[] {
+  return getTreeOrder(ws).filter((id) => ws.pages[id]?.favorite);
 }
 
 export function setActivePage(ws: WorkspaceData, id: string | null): WorkspaceData {

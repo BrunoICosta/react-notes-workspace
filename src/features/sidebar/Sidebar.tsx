@@ -1,6 +1,7 @@
 import { Icon } from '../../shared/ui/Icon';
 import { ThemeToggle } from '../../shared/ui/ThemeToggle';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
+import { FavoritesList } from './FavoritesList';
 import { PageTree } from './PageTree';
 import styles from './Sidebar.module.css';
 
@@ -24,6 +25,7 @@ export function Sidebar() {
       </div>
 
       <div className={styles.scroll}>
+        <FavoritesList />
         <nav className={styles.section} aria-labelledby="sidebar-pages-heading">
           <h2 id="sidebar-pages-heading" className={styles.sectionTitle}>
             Páginas
