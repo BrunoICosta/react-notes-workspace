@@ -1,4 +1,4 @@
-import { useRef, type KeyboardEvent } from 'react';
+import type { KeyboardEvent, RefObject } from 'react';
 import { useAutoResize } from '../../shared/hooks/useAutoResize';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import styles from './PageView.module.css';
@@ -6,17 +6,28 @@ import styles from './PageView.module.css';
 interface PageTitleProps {
   pageId: string;
   title: string;
-  onKeyDown?: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
+  inputRef: RefObject<HTMLTextAreaElement | null>;
+  /** Enter or ArrowDown on the last line moves into the page body. */
+  onExitBottom: () => void;
 }
 
-export function PageTitle({ pageId, title, onKeyDown }: PageTitleProps) {
+export function PageTitle({ pageId, title, inputRef, onExitBottom }: PageTitleProps) {
   const renamePage = useWorkspaceStore((state) => state.renamePage);
-  const ref = useRef<HTMLTextAreaElement>(null);
-  useAutoResize(ref, title);
+  useAutoResize(inputRef, title);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.nativeEvent.isComposing) return;
+    const element = event.currentTarget;
+    const atEnd = element.selectionEnd === element.value.length;
+    if (event.key === 'Enter' || (event.key === 'ArrowDown' && atEnd)) {
+      event.preventDefault();
+      onExitBottom();
+    }
+  };
 
   return (
     <textarea
-      ref={ref}
+      ref={inputRef}
       className={styles.title}
       value={title}
       rows={1}
@@ -24,10 +35,7 @@ export function PageTitle({ pageId, title, onKeyDown }: PageTitleProps) {
       aria-label="Título da página"
       maxLength={200}
       onChange={(event) => renamePage(pageId, event.target.value.replace(/\n/g, ' '))}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter') event.preventDefault();
-        onKeyDown?.(event);
-      }}
+      onKeyDown={handleKeyDown}
     />
   );
 }
