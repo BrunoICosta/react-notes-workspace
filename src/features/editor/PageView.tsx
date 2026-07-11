@@ -1,5 +1,6 @@
 import type { Page } from '../workspace/model/types';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
+import { BlockEditor } from './BlockEditor';
 import { EmojiPicker } from './EmojiPicker';
 import { PageTitle } from './PageTitle';
 import styles from './PageView.module.css';
@@ -22,6 +23,7 @@ export function PageView({ page }: PageViewProps) {
         <h1 className="visually-hidden">{page.title.trim() || 'Sem título'}</h1>
         <PageTitle pageId={page.id} title={page.title} />
       </header>
+      <BlockEditor page={page} />
     </article>
   );
 }

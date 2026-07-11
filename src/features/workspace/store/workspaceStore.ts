@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createId } from '../../../shared/lib/createId';
+import * as blocks from '../model/blocks';
 import * as tree from '../model/tree';
-import type { WorkspaceData } from '../model/types';
+import type { BlockType, WorkspaceData } from '../model/types';
 import { migrateWorkspace, sanitizeWorkspace, WORKSPACE_SCHEMA_VERSION } from './migrations';
 
 export const WORKSPACE_STORAGE_KEY = 'notes-workspace:data';
@@ -25,6 +26,16 @@ export interface WorkspaceActions {
   indentPage: (id: string) => void;
   outdentPage: (id: string) => void;
   setActivePage: (id: string | null) => void;
+
+  insertBlock: (pageId: string, afterId: string | null, type?: BlockType, text?: string) => string;
+  updateBlockText: (pageId: string, blockId: string, text: string) => void;
+  toggleTodo: (pageId: string, blockId: string) => void;
+  changeBlockType: (pageId: string, blockId: string, type: BlockType) => void;
+  removeBlock: (pageId: string, blockId: string) => void;
+  /** Splits a block at the caret and returns the id of the new block. */
+  splitBlock: (pageId: string, blockId: string, caret: number) => string;
+  mergeWithPrevious: (pageId: string, blockId: string) => void;
+  moveBlock: (pageId: string, activeId: string, overId: string) => void;
 }
 
 export type WorkspaceState = WorkspaceData & WorkspaceActions;
@@ -47,6 +58,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             parentId: options.parentId ?? null,
             title: options.title,
             icon: options.icon,
+            blocks: [blocks.createBlock(createId())],
           });
           return options.activate === false ? next : tree.setActivePage(next, id);
         });
@@ -60,6 +72,39 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       indentPage: (id) => set((state) => tree.indentPage(state, id)),
       outdentPage: (id) => set((state) => tree.outdentPage(state, id)),
       setActivePage: (id) => set((state) => tree.setActivePage(state, id)),
+
+      insertBlock: (pageId, afterId, type = 'paragraph', text = '') => {
+        const block = blocks.createBlock(createId(), type, text);
+        set((state) => blocks.insertBlockAfter(state, pageId, afterId, block, Date.now()));
+        return block.id;
+      },
+      updateBlockText: (pageId, blockId, text) =>
+        set((state) => blocks.updateBlock(state, pageId, blockId, { text }, Date.now())),
+      toggleTodo: (pageId, blockId) =>
+        set((state) => {
+          const block = state.pages[pageId]?.blocks.find((item) => item.id === blockId);
+          if (!block) return state;
+          return blocks.updateBlock(
+            state,
+            pageId,
+            blockId,
+            { checked: !block.checked },
+            Date.now(),
+          );
+        }),
+      changeBlockType: (pageId, blockId, type) =>
+        set((state) => blocks.changeBlockType(state, pageId, blockId, type, Date.now())),
+      removeBlock: (pageId, blockId) =>
+        set((state) => blocks.removeBlock(state, pageId, blockId, Date.now())),
+      splitBlock: (pageId, blockId, caret) => {
+        const id = createId();
+        set((state) => blocks.splitBlock(state, pageId, blockId, caret, id, Date.now()));
+        return id;
+      },
+      mergeWithPrevious: (pageId, blockId) =>
+        set((state) => blocks.mergeWithPrevious(state, pageId, blockId, Date.now())),
+      moveBlock: (pageId, activeId, overId) =>
+        set((state) => blocks.moveBlock(state, pageId, activeId, overId, Date.now())),
     }),
     {
       name: WORKSPACE_STORAGE_KEY,

@@ -1,0 +1,191 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: 3px 2px;
+  border-radius: var(--radius-sm);
+}
+
+.input {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+/* Paragraph placeholders only show on the focused block, like Notion. */
+.row[data-type='paragraph'] .input:not(:focus)::placeholder,
+.row[data-type='bulleted'] .input:not(:focus)::placeholder,
+.row[data-type='numbered'] .input:not(:focus)::placeholder {
+  color: transparent;
+}
+
+.row[data-type='heading1'] {
+  margin-top: 1.4em;
+}
+
+.row[data-type='heading1'] .input {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.row[data-type='heading2'] {
+  margin-top: 1.1em;
+}
+
+.row[data-type='heading2'] .input {
+  font-size: 23px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.row[data-type='heading3'] {
+  margin-top: 0.8em;
+}
+
+.row[data-type='heading3'] .input {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.editor > .row:first-child {
+  margin-top: 0;
+}
+
+.marker {
+  flex: none;
+  min-width: 22px;
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.row[data-type='bulleted'] .marker {
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.checkbox {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  margin: 5px 3px 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.row[data-checked] .input {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-text-placeholder);
+}
+
+.row[data-type='quote'] {
+  padding-left: 16px;
+}
+
+.row[data-type='quote']::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--color-text);
+}
+
+.row[data-type='quote'] .input {
+  font-size: 17px;
+}
+
+.row[data-type='code'] {
+  margin: 6px 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-code);
+  border: 1px solid var(--color-border);
+}
+
+.row[data-type='code'] .input {
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  tab-size: 2;
+}
+
+.row[data-type='callout'] {
+  margin: 6px 0;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-callout);
+}
+
+.calloutIcon {
+  flex: none;
+  font-size: 18px;
+  line-height: 1.45;
+}
+
+.divider {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: var(--radius-sm);
+  outline-offset: 0;
+}
+
+.divider hr {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--color-border-strong);
+}
+
+.divider:focus-visible {
+  background: var(--color-accent-soft);
+  outline: none;
+}
+
+.tail {
+  display: block;
+  min-height: 96px;
+  margin-top: var(--space-2);
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  cursor: text;
+  text-align: left;
+}
+
+.tail:focus-visible {
+  outline-offset: -2px;
+}
+
+.tailHint {
+  color: var(--color-text-placeholder);
+  font-size: 16px;
+}
