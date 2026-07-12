@@ -111,3 +111,54 @@ describe('BlockEditor lists', () => {
     expect(screen.getByRole('checkbox', { name: 'Marcar como pendente' })).toBeChecked();
   });
 });
+
+describe('Slash command menu', () => {
+  beforeEach(() => seedPage([createBlock('a', 'paragraph', '')]));
+
+  it('filters block types and converts the block with the keyboard', async () => {
+    const user = userEvent.setup();
+    render(<ConnectedPage />);
+    const input = screen.getByRole('textbox', { name: 'Texto' });
+
+    await user.click(input);
+    await user.keyboard('/');
+    expect(screen.getByRole('listbox', { name: 'Tipos de bloco' })).toBeInTheDocument();
+    expect(screen.getAllByRole('option')).toHaveLength(11);
+
+    await user.keyboard('titulo');
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      expect.stringContaining('Título 1'),
+      expect.stringContaining('Título 2'),
+      expect.stringContaining('Título 3'),
+    ]);
+
+    await user.keyboard('{ArrowDown}');
+    expect(screen.getAllByRole('option')[1]).toHaveAttribute('aria-selected', 'true');
+    expect(input).toHaveAttribute('aria-activedescendant', screen.getAllByRole('option')[1].id);
+
+    await user.keyboard('{Enter}');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(blocks()[0]).toMatchObject({ type: 'heading2', text: '' });
+    expect(screen.getByRole('textbox', { name: 'Título 2' })).toHaveFocus();
+  });
+
+  it('closes with Escape and keeps the typed text', async () => {
+    const user = userEvent.setup();
+    render(<ConnectedPage />);
+
+    await user.click(screen.getByRole('textbox', { name: 'Texto' }));
+    await user.keyboard('/cod{Escape}');
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(blocks()[0]).toMatchObject({ type: 'paragraph', text: '/cod' });
+  });
+
+  it('inserts a divider when chosen with the mouse', async () => {
+    const user = userEvent.setup();
+    render(<ConnectedPage />);
+
+    await user.click(screen.getByRole('textbox', { name: 'Texto' }));
+    await user.keyboard('/div');
+    await user.click(screen.getByRole('option', { name: /divisor/i }));
+    expect(blocks().map((block) => block.type)).toEqual(['divider', 'paragraph']);
+  });
+});

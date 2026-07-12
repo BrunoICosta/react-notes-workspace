@@ -17,6 +17,8 @@ import {
   isCaretOnLastLine,
   type CaretTarget,
 } from './caret';
+import { SlashMenu } from './SlashMenu';
+import { useSlashMenu } from './useSlashMenu';
 import styles from './BlockEditor.module.css';
 
 /** Blocks that turn back into a paragraph when Enter is pressed while empty. */
@@ -89,6 +91,9 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
     return true;
   }, []);
 
+  const slash = useSlashMenu({ pageId, requestFocus });
+  const { trackInput, handleKeyDown: handleSlashKeyDown, close: closeSlashMenu } = slash;
+
   const getBlocks = useCallback(
     () => useWorkspaceStore.getState().pages[pageId]?.blocks ?? [],
     [pageId],
@@ -107,8 +112,11 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
   );
 
   const handleTextChange = useCallback(
-    (block: Block, text: string) => updateBlockText(pageId, block.id, text),
-    [pageId, updateBlockText],
+    (block: Block, text: string, element: HTMLTextAreaElement) => {
+      updateBlockText(pageId, block.id, text);
+      trackInput(block, text, element);
+    },
+    [pageId, trackInput, updateBlockText],
   );
 
   const handleToggleTodo = useCallback(
@@ -156,6 +164,7 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
     (block: Block, event: KeyboardEvent<HTMLElement>) => {
       const index = getBlocks().findIndex((item) => item.id === block.id);
       if (index === -1 || event.nativeEvent.isComposing) return;
+      if (handleSlashKeyDown(block, event)) return;
 
       const target = event.currentTarget;
       if (!(target instanceof HTMLTextAreaElement)) {
@@ -244,6 +253,7 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
       focusSibling,
       getBlocks,
       handleDividerKeyDown,
+      handleSlashKeyDown,
       mergeWithPrevious,
       onExitTop,
       pageId,
@@ -274,8 +284,24 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
           onTextChange={handleTextChange}
           onToggleTodo={handleToggleTodo}
           onKeyDown={handleKeyDown}
+          onBlur={closeSlashMenu}
+          slashMenu={
+            slash.openBlockId === block.id
+              ? { listId: slash.menuId, activeOptionId: slash.activeOptionId }
+              : undefined
+          }
         />
       ))}
+      {slash.openBlockId && (
+        <SlashMenu
+          id={slash.menuId}
+          items={slash.items}
+          activeIndex={slash.activeIndex}
+          anchor={slash.anchor}
+          onSelect={slash.select}
+          onHover={slash.setActiveIndex}
+        />
+      )}
       <button
         type="button"
         className={styles.tail}

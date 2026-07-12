@@ -12,7 +12,9 @@ export interface BlockRowProps {
   onTextChange: (block: Block, text: string, element: HTMLTextAreaElement) => void;
   onToggleTodo: (block: Block) => void;
   onKeyDown: (block: Block, event: KeyboardEvent<HTMLElement>) => void;
-  onFocus?: (block: Block) => void;
+  onBlur?: (block: Block) => void;
+  /** Present while the slash menu is open for this block. */
+  slashMenu?: { listId: string; activeOptionId?: string };
 }
 
 function BlockRowComponent({
@@ -22,7 +24,8 @@ function BlockRowComponent({
   onTextChange,
   onToggleTodo,
   onKeyDown,
-  onFocus,
+  onBlur,
+  slashMenu,
 }: BlockRowProps) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   useAutoResize(textareaRef, block.text);
@@ -38,7 +41,7 @@ function BlockRowComponent({
           aria-label="Divisor (Backspace para remover)"
           tabIndex={0}
           onKeyDown={(event) => onKeyDown(block, event)}
-          onFocus={() => onFocus?.(block)}
+          onBlur={() => onBlur?.(block)}
         >
           <hr />
         </div>
@@ -85,7 +88,10 @@ function BlockRowComponent({
         spellCheck={block.type !== 'code'}
         onChange={(event) => onTextChange(block, event.target.value, event.target)}
         onKeyDown={(event) => onKeyDown(block, event)}
-        onFocus={() => onFocus?.(block)}
+        onBlur={() => onBlur?.(block)}
+        aria-controls={slashMenu?.listId}
+        aria-activedescendant={slashMenu?.activeOptionId}
+        aria-autocomplete={slashMenu ? 'list' : undefined}
       />
     </div>
   );

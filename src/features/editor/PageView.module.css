@@ -48,3 +48,7 @@
 .title::placeholder {
   color: var(--color-text-placeholder);
 }
+
+.title:focus-visible {
+  outline: none;
+}
