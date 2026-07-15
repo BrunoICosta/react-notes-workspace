@@ -1,5 +1,8 @@
-import { memo, useRef, type KeyboardEvent } from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { memo, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import { useAutoResize } from '../../shared/hooks/useAutoResize';
+import { Icon } from '../../shared/ui/Icon';
 import type { Block } from '../workspace/model/types';
 import { BLOCK_CONFIG } from './blockConfig';
 import styles from './BlockEditor.module.css';
@@ -12,6 +15,7 @@ export interface BlockRowProps {
   onTextChange: (block: Block, text: string, element: HTMLTextAreaElement) => void;
   onToggleTodo: (block: Block) => void;
   onKeyDown: (block: Block, event: KeyboardEvent<HTMLElement>) => void;
+  onInsertBelow: (block: Block) => void;
   onBlur?: (block: Block) => void;
   /** Present while the slash menu is open for this block. */
   slashMenu?: { listId: string; activeOptionId?: string };
@@ -24,15 +28,53 @@ function BlockRowComponent({
   onTextChange,
   onToggleTodo,
   onKeyDown,
+  onInsertBelow,
   onBlur,
   slashMenu,
 }: BlockRowProps) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   useAutoResize(textareaRef, block.text);
   const config = BLOCK_CONFIG[block.type];
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: block.id });
 
+  const gutter = (
+    <div className={styles.gutter}>
+      <button
+        type="button"
+        className={styles.gutterButton}
+        onClick={() => onInsertBelow(block)}
+        aria-label="Inserir bloco abaixo"
+        title="Inserir bloco abaixo"
+        tabIndex={-1}
+      >
+        <Icon name="plus" size={14} />
+      </button>
+      <button
+        ref={setActivatorNodeRef}
+        type="button"
+        className={styles.gutterButton}
+        data-handle
+        title="Arraste para mover (ou Espaço e setas)"
+        {...attributes}
+        {...listeners}
+        aria-label={`Mover bloco: ${config.label}`}
+      >
+        <Icon name="grip" size={14} />
+      </button>
+    </div>
+  );
+
+  let content: ReactNode;
   if (block.type === 'divider') {
-    return (
+    content = (
       <div className={styles.row} data-type="divider">
         <div
           ref={(element) => registerRef(block.id, element)}
@@ -47,52 +89,65 @@ function BlockRowComponent({
         </div>
       </div>
     );
+  } else {
+    content = (
+      <div className={styles.row} data-type={block.type} data-checked={block.checked || undefined}>
+        {block.type === 'todo' && (
+          <input
+            type="checkbox"
+            className={styles.checkbox}
+            checked={block.checked}
+            onChange={() => onToggleTodo(block)}
+            aria-label={block.checked ? 'Marcar como pendente' : 'Marcar como concluída'}
+          />
+        )}
+        {block.type === 'bulleted' && (
+          <span className={styles.marker} aria-hidden="true">
+            •
+          </span>
+        )}
+        {block.type === 'numbered' && (
+          <span className={styles.marker} aria-hidden="true">
+            {listNumber}.
+          </span>
+        )}
+        {block.type === 'callout' && (
+          <span className={styles.calloutIcon} aria-hidden="true">
+            💡
+          </span>
+        )}
+        <textarea
+          ref={(element) => {
+            textareaRef.current = element;
+            registerRef(block.id, element);
+          }}
+          className={styles.input}
+          value={block.text}
+          rows={1}
+          placeholder={config.placeholder}
+          aria-label={config.label}
+          spellCheck={block.type !== 'code'}
+          onChange={(event) => onTextChange(block, event.target.value, event.target)}
+          onKeyDown={(event) => onKeyDown(block, event)}
+          onBlur={() => onBlur?.(block)}
+          aria-controls={slashMenu?.listId}
+          aria-activedescendant={slashMenu?.activeOptionId}
+          aria-autocomplete={slashMenu ? 'list' : undefined}
+        />
+      </div>
+    );
   }
 
   return (
-    <div className={styles.row} data-type={block.type} data-checked={block.checked || undefined}>
-      {block.type === 'todo' && (
-        <input
-          type="checkbox"
-          className={styles.checkbox}
-          checked={block.checked}
-          onChange={() => onToggleTodo(block)}
-          aria-label={block.checked ? 'Marcar como pendente' : 'Marcar como concluída'}
-        />
-      )}
-      {block.type === 'bulleted' && (
-        <span className={styles.marker} aria-hidden="true">
-          •
-        </span>
-      )}
-      {block.type === 'numbered' && (
-        <span className={styles.marker} aria-hidden="true">
-          {listNumber}.
-        </span>
-      )}
-      {block.type === 'callout' && (
-        <span className={styles.calloutIcon} aria-hidden="true">
-          💡
-        </span>
-      )}
-      <textarea
-        ref={(element) => {
-          textareaRef.current = element;
-          registerRef(block.id, element);
-        }}
-        className={styles.input}
-        value={block.text}
-        rows={1}
-        placeholder={config.placeholder}
-        aria-label={config.label}
-        spellCheck={block.type !== 'code'}
-        onChange={(event) => onTextChange(block, event.target.value, event.target)}
-        onKeyDown={(event) => onKeyDown(block, event)}
-        onBlur={() => onBlur?.(block)}
-        aria-controls={slashMenu?.listId}
-        aria-activedescendant={slashMenu?.activeOptionId}
-        aria-autocomplete={slashMenu ? 'list' : undefined}
-      />
+    <div
+      ref={setNodeRef}
+      className={styles.block}
+      data-type={block.type}
+      data-dragging={isDragging || undefined}
+      style={{ transform: CSS.Translate.toString(transform), transition }}
+    >
+      {gutter}
+      {content}
     </div>
   );
 }

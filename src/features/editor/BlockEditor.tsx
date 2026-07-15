@@ -1,5 +1,8 @@
+import { closestCenter, DndContext } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import {
   useCallback,
+  useMemo,
   useImperativeHandle,
   useLayoutEffect,
   useRef,
@@ -18,6 +21,7 @@ import {
   type CaretTarget,
 } from './caret';
 import { SlashMenu } from './SlashMenu';
+import { restrictToVerticalAxis, screenReaderInstructions, useBlockDnd } from './useBlockDnd';
 import { useSlashMenu } from './useSlashMenu';
 import styles from './BlockEditor.module.css';
 
@@ -264,6 +268,14 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
     ],
   );
 
+  const dnd = useBlockDnd(pageId);
+  const blockIds = useMemo(() => page.blocks.map((block) => block.id), [page.blocks]);
+
+  const handleInsertBelow = useCallback(
+    (block: Block) => requestFocus(insertBlock(pageId, block.id), 'start'),
+    [insertBlock, pageId, requestFocus],
+  );
+
   const appendParagraph = () => {
     const last = page.blocks[page.blocks.length - 1];
     if (last && last.type === 'paragraph' && last.text === '') {
@@ -275,23 +287,35 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
 
   return (
     <div className={styles.editor}>
-      {page.blocks.map((block, index) => (
-        <BlockRow
-          key={block.id}
-          block={block}
-          listNumber={block.type === 'numbered' ? getListNumber(page.blocks, index) : 0}
-          registerRef={registerRef}
-          onTextChange={handleTextChange}
-          onToggleTodo={handleToggleTodo}
-          onKeyDown={handleKeyDown}
-          onBlur={closeSlashMenu}
-          slashMenu={
-            slash.openBlockId === block.id
-              ? { listId: slash.menuId, activeOptionId: slash.activeOptionId }
-              : undefined
-          }
-        />
-      ))}
+      <DndContext
+        sensors={dnd.sensors}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToVerticalAxis]}
+        accessibility={{ announcements: dnd.announcements, screenReaderInstructions }}
+        onDragStart={closeSlashMenu}
+        onDragEnd={dnd.handleDragEnd}
+      >
+        <SortableContext items={blockIds} strategy={verticalListSortingStrategy}>
+          {page.blocks.map((block, index) => (
+            <BlockRow
+              key={block.id}
+              block={block}
+              listNumber={block.type === 'numbered' ? getListNumber(page.blocks, index) : 0}
+              registerRef={registerRef}
+              onTextChange={handleTextChange}
+              onToggleTodo={handleToggleTodo}
+              onKeyDown={handleKeyDown}
+              onInsertBelow={handleInsertBelow}
+              onBlur={closeSlashMenu}
+              slashMenu={
+                slash.openBlockId === block.id
+                  ? { listId: slash.menuId, activeOptionId: slash.activeOptionId }
+                  : undefined
+              }
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
       {slash.openBlockId && (
         <SlashMenu
           id={slash.menuId}
