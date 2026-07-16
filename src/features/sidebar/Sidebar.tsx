@@ -1,5 +1,7 @@
+import { MOD_KEY_LABEL } from '../../shared/hooks/useHotkey';
 import { Icon } from '../../shared/ui/Icon';
 import { ThemeToggle } from '../../shared/ui/ThemeToggle';
+import { useUiStore } from '../layout/uiStore';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import { FavoritesList } from './FavoritesList';
 import { PageTree } from './PageTree';
@@ -7,6 +9,7 @@ import styles from './Sidebar.module.css';
 
 export function Sidebar() {
   const createPage = useWorkspaceStore((state) => state.createPage);
+  const openSearch = useUiStore((state) => state.openSearch);
 
   return (
     <aside className={styles.sidebar} aria-label="Barra lateral">
@@ -18,6 +21,16 @@ export function Sidebar() {
       </header>
 
       <div className={styles.quickActions}>
+        <button
+          type="button"
+          className={styles.quickAction}
+          onClick={openSearch}
+          aria-keyshortcuts="Control+K Meta+K"
+        >
+          <Icon name="search" />
+          <span>Buscar</span>
+          <kbd className={styles.kbd}>{MOD_KEY_LABEL} K</kbd>
+        </button>
         <button type="button" className={styles.quickAction} onClick={() => createPage()}>
           <Icon name="plus" />
           <span>Nova página</span>

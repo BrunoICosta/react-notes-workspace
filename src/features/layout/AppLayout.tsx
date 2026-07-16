@@ -1,4 +1,6 @@
+import { useHotkey } from '../../shared/hooks/useHotkey';
 import { PageView } from '../editor/PageView';
+import { QuickSearch } from '../search/QuickSearch';
 import { DeletePageDialog } from '../sidebar/DeletePageDialog';
 import { Sidebar } from '../sidebar/Sidebar';
 import { useActivePage } from '../workspace/store/selectors';
@@ -11,6 +13,8 @@ export function AppLayout() {
   const activePage = useActivePage();
   const pendingDeletePageId = useUiStore((state) => state.pendingDeletePageId);
   const cancelDeletePage = useUiStore((state) => state.cancelDeletePage);
+  const toggleSearch = useUiStore((state) => state.toggleSearch);
+  useHotkey('k', toggleSearch, { mod: true });
 
   return (
     <div className={styles.layout}>
@@ -24,6 +28,7 @@ export function AppLayout() {
           {activePage ? <PageView key={activePage.id} page={activePage} /> : <EmptyWorkspace />}
         </main>
       </div>
+      <QuickSearch />
       <DeletePageDialog pageId={pendingDeletePageId} onClose={cancelDeletePage} />
     </div>
   );
