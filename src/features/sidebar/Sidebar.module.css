@@ -106,3 +106,21 @@
   font-size: 11px;
   color: var(--color-text-muted);
 }
+
+.footerButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.footerButton:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}

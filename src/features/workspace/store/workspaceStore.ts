@@ -4,6 +4,7 @@ import { createId } from '../../../shared/lib/createId';
 import * as blocks from '../model/blocks';
 import * as tree from '../model/tree';
 import type { BlockType, WorkspaceData } from '../model/types';
+import { createSeedWorkspace } from '../seed/seedWorkspace';
 import { migrateWorkspace, sanitizeWorkspace, WORKSPACE_SCHEMA_VERSION } from './migrations';
 
 export const WORKSPACE_STORAGE_KEY = 'notes-workspace:data';
@@ -26,6 +27,8 @@ export interface WorkspaceActions {
   indentPage: (id: string) => void;
   outdentPage: (id: string) => void;
   setActivePage: (id: string | null) => void;
+  /** Replaces everything with the welcome pages. */
+  resetWorkspace: () => void;
 
   insertBlock: (pageId: string, afterId: string | null, type?: BlockType, text?: string) => string;
   updateBlockText: (pageId: string, blockId: string, text: string) => void;
@@ -47,7 +50,8 @@ export function selectWorkspaceData(state: WorkspaceState): WorkspaceData {
 export const useWorkspaceStore = create<WorkspaceState>()(
   persist(
     (set) => ({
-      ...tree.createEmptyWorkspace(),
+      // First visit: start with the welcome pages (persisted data replaces them on hydration).
+      ...createSeedWorkspace(),
 
       createPage: (options = {}) => {
         const id = createId();
@@ -72,6 +76,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       indentPage: (id) => set((state) => tree.indentPage(state, id)),
       outdentPage: (id) => set((state) => tree.outdentPage(state, id)),
       setActivePage: (id) => set((state) => tree.setActivePage(state, id)),
+      resetWorkspace: () => set(createSeedWorkspace()),
 
       insertBlock: (pageId, afterId, type = 'paragraph', text = '') => {
         const block = blocks.createBlock(createId(), type, text);

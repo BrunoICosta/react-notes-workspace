@@ -43,6 +43,7 @@ button.crumb:hover {
 }
 
 .crumb[data-current] {
+  max-width: min(480px, 100%);
   color: var(--color-text);
 }
 

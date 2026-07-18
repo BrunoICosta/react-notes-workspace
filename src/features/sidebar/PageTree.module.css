@@ -62,7 +62,7 @@
 
 .toggle:disabled {
   cursor: default;
-  opacity: 0.35;
+  opacity: 0.25;
 }
 
 .toggle svg {
@@ -109,23 +109,21 @@
 }
 
 .actions {
-  display: flex;
+  display: none;
   flex: none;
   gap: 1px;
   padding-right: 4px;
-  opacity: 0;
-  transition: opacity var(--duration-fast) ease;
 }
 
 .row:hover .actions,
 .row:focus-within .actions,
 .actions:has([aria-expanded='true']) {
-  opacity: 1;
+  display: flex;
 }
 
 @media (hover: none) {
   .actions {
-    opacity: 1;
+    display: flex;
   }
 }
 

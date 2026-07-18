@@ -5,6 +5,7 @@ import { useUiStore } from '../layout/uiStore';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import { FavoritesList } from './FavoritesList';
 import { PageTree } from './PageTree';
+import { ResetWorkspaceButton } from './ResetWorkspaceButton';
 import styles from './Sidebar.module.css';
 
 export function Sidebar() {
@@ -48,6 +49,7 @@ export function Sidebar() {
       </div>
 
       <footer className={styles.footer}>
+        <ResetWorkspaceButton />
         <ThemeToggle />
       </footer>
     </aside>
