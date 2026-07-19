@@ -20,6 +20,7 @@ import {
   isCaretOnLastLine,
   type CaretTarget,
 } from './caret';
+import { detectShortcut } from './markdownShortcuts';
 import { SlashMenu } from './SlashMenu';
 import { restrictToVerticalAxis, screenReaderInstructions, useBlockDnd } from './useBlockDnd';
 import { useSlashMenu } from './useSlashMenu';
@@ -117,10 +118,22 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
 
   const handleTextChange = useCallback(
     (block: Block, text: string, element: HTMLTextAreaElement) => {
-      updateBlockText(pageId, block.id, text);
-      trackInput(block, text, element);
+      const shortcut = block.type === 'paragraph' ? detectShortcut(block.text, text) : null;
+      if (!shortcut) {
+        updateBlockText(pageId, block.id, text);
+        trackInput(block, text, element);
+        return;
+      }
+      if (shortcut.type === 'divider') {
+        changeBlockType(pageId, block.id, 'divider');
+        requestFocus(insertBlock(pageId, block.id, 'paragraph', shortcut.text), 'start');
+        return;
+      }
+      updateBlockText(pageId, block.id, shortcut.text);
+      changeBlockType(pageId, block.id, shortcut.type);
+      requestFocus(block.id, 'start');
     },
-    [pageId, trackInput, updateBlockText],
+    [changeBlockType, insertBlock, pageId, requestFocus, trackInput, updateBlockText],
   );
 
   const handleToggleTodo = useCallback(

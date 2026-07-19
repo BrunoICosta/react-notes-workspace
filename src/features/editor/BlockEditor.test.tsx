@@ -162,3 +162,29 @@ describe('Slash command menu', () => {
     expect(blocks().map((block) => block.type)).toEqual(['divider', 'paragraph']);
   });
 });
+
+describe('Markdown shortcuts', () => {
+  beforeEach(() => seedPage([createBlock('a', 'paragraph', '')]));
+
+  it('turns "# " into a heading and "- " into a bulleted list', async () => {
+    const user = userEvent.setup();
+    render(<ConnectedPage />);
+
+    await user.click(screen.getByRole('textbox', { name: 'Texto' }));
+    await user.keyboard('# Plano');
+    expect(blocks()[0]).toMatchObject({ type: 'heading1', text: 'Plano' });
+
+    await user.keyboard('{Enter}- item');
+    expect(blocks()[1]).toMatchObject({ type: 'bulleted', text: 'item' });
+  });
+
+  it('turns "---" into a divider followed by a new paragraph', async () => {
+    const user = userEvent.setup();
+    render(<ConnectedPage />);
+
+    await user.click(screen.getByRole('textbox', { name: 'Texto' }));
+    await user.keyboard('---');
+    expect(blocks().map((block) => block.type)).toEqual(['divider', 'paragraph']);
+    expect(screen.getByRole('textbox', { name: 'Texto' })).toHaveFocus();
+  });
+});
