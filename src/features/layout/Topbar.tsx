@@ -1,13 +1,18 @@
+import type { RefObject } from 'react';
 import { DropdownMenu } from '../../shared/ui/DropdownMenu';
 import { Icon } from '../../shared/ui/Icon';
 import type { Page } from '../workspace/model/types';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
+import { SIDEBAR_ID } from './uiStore';
 import { Breadcrumbs } from './Breadcrumbs';
 import { useUiStore } from './uiStore';
 import styles from './Topbar.module.css';
 
 interface TopbarProps {
   page: Page | null;
+  /** Small screens: shows the button that opens the sidebar drawer. */
+  showMenuButton?: boolean;
+  menuButtonRef?: RefObject<HTMLButtonElement | null>;
 }
 
 const editedFormatter = new Intl.DateTimeFormat('pt-BR', {
@@ -17,16 +22,42 @@ const editedFormatter = new Intl.DateTimeFormat('pt-BR', {
   minute: '2-digit',
 });
 
-export function Topbar({ page }: TopbarProps) {
+export function Topbar({ page, showMenuButton = false, menuButtonRef }: TopbarProps) {
   const toggleFavorite = useWorkspaceStore((state) => state.toggleFavorite);
   const createPage = useWorkspaceStore((state) => state.createPage);
   const requestDeletePage = useUiStore((state) => state.requestDeletePage);
+  const sidebarOpen = useUiStore((state) => state.sidebarOpen);
+  const openSidebar = useUiStore((state) => state.openSidebar);
+  const openSearch = useUiStore((state) => state.openSearch);
 
   return (
     <header className={styles.topbar}>
+      {showMenuButton && (
+        <button
+          ref={menuButtonRef}
+          type="button"
+          className={styles.iconButton}
+          onClick={openSidebar}
+          aria-label="Abrir barra lateral"
+          aria-controls={SIDEBAR_ID}
+          aria-expanded={sidebarOpen}
+        >
+          <Icon name="menu" />
+        </button>
+      )}
       <div className={styles.current}>{page && <Breadcrumbs page={page} />}</div>
       {page && (
         <div className={styles.actions}>
+          {showMenuButton && (
+            <button
+              type="button"
+              className={styles.iconButton}
+              onClick={openSearch}
+              aria-label="Buscar"
+            >
+              <Icon name="search" />
+            </button>
+          )}
           <span className={styles.edited}>
             Editado em{' '}
             <time dateTime={new Date(page.updatedAt).toISOString()}>

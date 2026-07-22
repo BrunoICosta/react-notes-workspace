@@ -33,3 +33,17 @@
 .skipLink:focus {
   transform: none;
 }
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-drawer) - 1);
+  background: var(--color-overlay);
+  animation: backdrop-in var(--duration-base) ease;
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}

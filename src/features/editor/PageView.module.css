@@ -52,3 +52,18 @@
 .title:focus-visible {
   outline: none;
 }
+
+@media (max-width: 768px) {
+  /* Extra left padding keeps the block drag handles on screen. */
+  .page {
+    padding: var(--space-5) var(--space-4) 40vh 44px;
+  }
+
+  .icon {
+    font-size: 46px;
+  }
+
+  .title {
+    font-size: 30px;
+  }
+}

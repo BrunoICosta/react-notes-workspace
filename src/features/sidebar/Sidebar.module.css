@@ -124,3 +124,46 @@
   background: var(--color-bg-hover);
   color: var(--color-text);
 }
+
+.closeButton {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-muted);
+}
+
+.closeButton:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+/* Off-canvas drawer on small screens. */
+.sidebar[data-mobile] {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: var(--z-drawer);
+  width: min(86vw, 300px);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    visibility 0s linear var(--duration-base);
+}
+
+.sidebar[data-mobile][data-open] {
+  transform: none;
+  visibility: visible;
+  box-shadow: var(--shadow-drawer);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+
+@media (hover: none) {
+  .kbd {
+    display: none;
+  }
+}
