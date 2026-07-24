@@ -38,7 +38,10 @@ export function useAnchoredPosition(
   return position;
 }
 
-/** Calls `onDismiss` on pointer down outside the given elements or on window resize. */
+/**
+ * Calls `onDismiss` on pointer down outside the given elements, on window resize and
+ * when an ancestor scrolls (a fixed popover would otherwise drift away from its anchor).
+ */
 export function useDismiss(
   open: boolean,
   refs: ReadonlyArray<RefObject<HTMLElement | null>>,
@@ -46,15 +49,18 @@ export function useDismiss(
 ): void {
   useEffect(() => {
     if (!open) return;
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-      if (refs.some((ref) => ref.current?.contains(target))) return;
-      onDismiss();
+    const isInside = (event: Event) =>
+      event.target instanceof Node &&
+      refs.some((ref) => ref.current?.contains(event.target as Node));
+    const handleOutside = (event: Event) => {
+      if (!isInside(event)) onDismiss();
     };
-    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('pointerdown', handleOutside);
+    window.addEventListener('scroll', handleOutside, true);
     window.addEventListener('resize', onDismiss);
     return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('pointerdown', handleOutside);
+      window.removeEventListener('scroll', handleOutside, true);
       window.removeEventListener('resize', onDismiss);
     };
   }, [open, refs, onDismiss]);

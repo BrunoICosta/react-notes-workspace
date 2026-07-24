@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { DropdownMenu } from './DropdownMenu';
@@ -57,6 +57,17 @@ describe('DropdownMenu', () => {
 
     await user.click(screen.getByRole('button', { name: 'Ações' }));
     await user.click(document.body);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+  });
+});
+
+describe('DropdownMenu positioning', () => {
+  it('closes when the page scrolls so it never drifts away from its trigger', async () => {
+    const user = userEvent.setup();
+    renderMenu();
+
+    await user.click(screen.getByRole('button', { name: 'Ações' }));
+    fireEvent.scroll(document);
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 });

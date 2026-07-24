@@ -23,13 +23,26 @@ export function SlashMenu({ id, items, activeIndex, anchor, onSelect, onHover }:
 
   useLayoutEffect(() => {
     if (!anchor) return;
-    const rect = anchor.getBoundingClientRect();
-    const height = Math.min(listRef.current?.offsetHeight ?? MAX_HEIGHT, MAX_HEIGHT);
-    const fitsBelow = rect.bottom + height + GUTTER <= window.innerHeight;
-    setPosition({
-      top: fitsBelow ? rect.bottom + 4 : Math.max(GUTTER, rect.top - height - 4),
-      left: Math.max(GUTTER, Math.min(rect.left, window.innerWidth - 300 - GUTTER)),
-    });
+    const update = () => {
+      const rect = anchor.getBoundingClientRect();
+      const height = Math.min(listRef.current?.offsetHeight ?? MAX_HEIGHT, MAX_HEIGHT);
+      const fitsBelow = rect.bottom + height + GUTTER <= window.innerHeight;
+      setPosition({
+        top: fitsBelow ? rect.bottom + 4 : Math.max(GUTTER, rect.top - height - 4),
+        left: Math.max(GUTTER, Math.min(rect.left, window.innerWidth - 300 - GUTTER)),
+      });
+    };
+    update();
+    // The editor scrolls inside <main>, so follow the anchor on any scroll (capture phase).
+    const handleScroll = (event: Event) => {
+      if (!(event.target instanceof Node && listRef.current?.contains(event.target))) update();
+    };
+    window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('resize', update);
+    };
   }, [anchor, items.length]);
 
   useLayoutEffect(() => {
