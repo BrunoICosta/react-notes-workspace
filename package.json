@@ -1,7 +1,10 @@
 {
   "name": "react-notes-workspace",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Workspace de notas inspirado no Notion com editor de blocos, comando barra e busca rápida.",
+  "license": "MIT",
+  "author": "Bruno Vinicius Isaac Costa",
   "type": "module",
   "scripts": {
     "dev": "vite",
