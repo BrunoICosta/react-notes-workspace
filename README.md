@@ -8,6 +8,15 @@ fica salvo no `localStorage` do navegador, com versionamento e migração do for
 
 **Demo:** https://brunoicosta.github.io/react-notes-workspace/
 
+![Página de boas-vindas no tema claro](docs/screenshot.png)
+
+<details>
+<summary>Tema escuro</summary>
+
+![Página de tipos de bloco no tema escuro](docs/screenshot-dark.png)
+
+</details>
+
 ## Funcionalidades
 
 - **Árvore de páginas:** criar, renomear (inline, duplo clique ou `F2`), aninhar/desaninhar,
