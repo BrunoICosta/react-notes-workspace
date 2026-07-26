@@ -1,4 +1,5 @@
 import { useId, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal } from './Modal';
 import styles from './ConfirmDialog.module.css';
 
@@ -18,11 +19,12 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = 'Cancelar',
+  cancelLabel,
   tone = 'default',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation();
   const titleId = useId();
   const descriptionId = useId();
 
@@ -38,7 +40,7 @@ export function ConfirmDialog({
       </div>
       <div className={styles.actions}>
         <button type="button" className={styles.button} onClick={onCancel} data-autofocus>
-          {cancelLabel}
+          {cancelLabel ?? t('cancel')}
         </button>
         <button
           type="button"

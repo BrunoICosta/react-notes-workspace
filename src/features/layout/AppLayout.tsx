@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHotkey } from '../../shared/hooks/useHotkey';
 import { useMediaQuery } from '../../shared/hooks/useMediaQuery';
 import { PageView } from '../editor/PageView';
@@ -14,6 +15,7 @@ import styles from './AppLayout.module.css';
 const MOBILE_QUERY = '(max-width: 768px)';
 
 export function AppLayout() {
+  const { t } = useTranslation();
   const activePage = useActivePage();
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const pendingDeletePageId = useUiStore((state) => state.pendingDeletePageId);
@@ -40,7 +42,7 @@ export function AppLayout() {
   return (
     <div className={styles.layout}>
       <a className={styles.skipLink} href="#main-content">
-        Pular para o conteúdo
+        {t('skipToContent')}
       </a>
       <Sidebar mobile={isMobile} open={drawerOpen} onClose={closeDrawer} />
       {drawerOpen && <div className={styles.backdrop} onClick={closeDrawer} aria-hidden="true" />}

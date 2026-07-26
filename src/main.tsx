@@ -1,3 +1,5 @@
+// i18n first: the store reads the active language to create the welcome pages.
+import './i18n';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './app/App';

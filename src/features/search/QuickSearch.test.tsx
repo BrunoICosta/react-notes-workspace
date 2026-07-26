@@ -45,7 +45,7 @@ describe('QuickSearch', () => {
     render(<AppLayout />);
 
     await user.click(screen.getByRole('button', { name: /buscar/i }));
-    await user.type(screen.getByRole('combobox'), 'zzz');
+    await user.type(screen.getByRole('combobox', { name: 'Buscar por título ou conteúdo' }), 'zzz');
     expect(within(screen.getByRole('dialog')).getByRole('status')).toHaveTextContent(
       'Nenhuma página encontrada para “zzz”.',
     );

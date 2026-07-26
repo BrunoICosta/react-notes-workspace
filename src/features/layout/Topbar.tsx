@@ -3,6 +3,7 @@ import { DropdownMenu } from '../../shared/ui/DropdownMenu';
 import { Icon } from '../../shared/ui/Icon';
 import type { Page } from '../workspace/model/types';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
+import { LanguageSwitcher } from '../preferences/LanguageSwitcher';
 import { SIDEBAR_ID } from './uiStore';
 import { Breadcrumbs } from './Breadcrumbs';
 import { useUiStore } from './uiStore';
@@ -97,6 +98,7 @@ export function Topbar({ page, showMenuButton = false, menuButtonRef }: TopbarPr
           />
         </div>
       )}
+      <LanguageSwitcher />
     </header>
   );
 }
