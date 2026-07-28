@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../../shared/ui/ConfirmDialog';
 import { getDescendantIds } from '../workspace/model/tree';
 import { pageTitle } from '../workspace/store/selectors';
@@ -14,21 +15,22 @@ export function DeletePageDialog({ pageId, onClose }: DeletePageDialogProps) {
     pageId ? getDescendantIds(state, pageId).length : 0,
   );
   const deletePage = useWorkspaceStore((state) => state.deletePage);
+  const { t } = useTranslation('workspace');
 
   if (!page) return null;
 
   const description =
     descendantCount === 0
-      ? 'A página será excluída permanentemente. Essa ação não pode ser desfeita.'
-      : `A página e ${descendantCount === 1 ? 'sua subpágina' : `suas ${descendantCount} subpáginas`} serão excluídas permanentemente. Essa ação não pode ser desfeita.`;
+      ? t('deleteDialog.descriptionNoChildren')
+      : t('deleteDialog.description', { count: descendantCount });
 
   return (
     <ConfirmDialog
       open
       tone="danger"
-      title={`Excluir “${pageTitle(page)}”?`}
+      title={t('deleteDialog.title', { title: pageTitle(page) })}
       description={<p>{description}</p>}
-      confirmLabel="Excluir"
+      confirmLabel={t('deleteDialog.confirm')}
       onCancel={onClose}
       onConfirm={() => {
         deletePage(page.id);

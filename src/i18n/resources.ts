@@ -1,5 +1,7 @@
 import { common as enCommon } from './locales/en/common';
+import { workspace as enWorkspace } from './locales/en/workspace';
 import { common as ptCommon } from './locales/pt-BR/common';
+import { workspace as ptWorkspace } from './locales/pt-BR/workspace';
 
 export const SUPPORTED_LANGUAGES = ['pt-BR', 'en'] as const;
 export type Language = (typeof SUPPORTED_LANGUAGES)[number];
@@ -9,8 +11,8 @@ export const defaultNS = 'common';
 
 /** pt-BR is the source language; every other language must match its shape. */
 export const resources = {
-  'pt-BR': { common: ptCommon },
-  en: { common: enCommon },
+  'pt-BR': { common: ptCommon, workspace: ptWorkspace },
+  en: { common: enCommon, workspace: enWorkspace },
 } as const;
 
 export const NAMESPACES = Object.keys(resources[DEFAULT_LANGUAGE]) as Array<

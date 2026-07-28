@@ -1,12 +1,12 @@
-import type { RefObject } from 'react';
+import { useMemo, type RefObject } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 import { DropdownMenu } from '../../shared/ui/DropdownMenu';
 import { Icon } from '../../shared/ui/Icon';
 import type { Page } from '../workspace/model/types';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import { LanguageSwitcher } from '../preferences/LanguageSwitcher';
-import { SIDEBAR_ID } from './uiStore';
 import { Breadcrumbs } from './Breadcrumbs';
-import { useUiStore } from './uiStore';
+import { SIDEBAR_ID, useUiStore } from './uiStore';
 import styles from './Topbar.module.css';
 
 interface TopbarProps {
@@ -16,13 +16,6 @@ interface TopbarProps {
   menuButtonRef?: RefObject<HTMLButtonElement | null>;
 }
 
-const editedFormatter = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: 'short',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
 export function Topbar({ page, showMenuButton = false, menuButtonRef }: TopbarProps) {
   const toggleFavorite = useWorkspaceStore((state) => state.toggleFavorite);
   const createPage = useWorkspaceStore((state) => state.createPage);
@@ -30,6 +23,17 @@ export function Topbar({ page, showMenuButton = false, menuButtonRef }: TopbarPr
   const sidebarOpen = useUiStore((state) => state.sidebarOpen);
   const openSidebar = useUiStore((state) => state.openSidebar);
   const openSearch = useUiStore((state) => state.openSearch);
+  const { t, i18n } = useTranslation('workspace');
+  const editedFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(i18n.language, {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+    [i18n.language],
+  );
 
   return (
     <header className={styles.topbar}>
@@ -39,7 +43,7 @@ export function Topbar({ page, showMenuButton = false, menuButtonRef }: TopbarPr
           type="button"
           className={styles.iconButton}
           onClick={openSidebar}
-          aria-label="Abrir barra lateral"
+          aria-label={t('sidebar.open')}
           aria-controls={SIDEBAR_ID}
           aria-expanded={sidebarOpen}
         >
@@ -54,42 +58,44 @@ export function Topbar({ page, showMenuButton = false, menuButtonRef }: TopbarPr
               type="button"
               className={styles.iconButton}
               onClick={openSearch}
-              aria-label="Buscar"
+              aria-label={t('sidebar.search')}
             >
               <Icon name="search" />
             </button>
           )}
           <span className={styles.edited}>
-            Editado em{' '}
-            <time dateTime={new Date(page.updatedAt).toISOString()}>
-              {editedFormatter.format(page.updatedAt)}
-            </time>
+            <Trans
+              t={t}
+              i18nKey="topbar.edited"
+              values={{ date: editedFormatter.format(page.updatedAt) }}
+              components={{ time: <time dateTime={new Date(page.updatedAt).toISOString()} /> }}
+            />
           </span>
           <button
             type="button"
             className={styles.iconButton}
             aria-pressed={page.favorite}
-            aria-label="Favorito"
-            title={page.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
+            aria-label={t('actions.favorite')}
+            title={page.favorite ? t('actions.removeFavorite') : t('actions.addFavorite')}
             onClick={() => toggleFavorite(page.id)}
             data-favorite={page.favorite || undefined}
           >
             <Icon name="star" filled={page.favorite} />
           </button>
           <DropdownMenu
-            label="Mais ações da página"
+            label={t('actions.more')}
             triggerClassName={styles.iconButton}
             triggerContent={<Icon name="more" />}
             items={[
               {
                 id: 'subpage',
-                label: 'Adicionar subpágina',
+                label: t('actions.addSubpage'),
                 icon: 'plus',
                 onSelect: () => createPage({ parentId: page.id }),
               },
               {
                 id: 'delete',
-                label: 'Excluir página',
+                label: t('actions.deletePage'),
                 icon: 'trash',
                 danger: true,
                 onSelect: () => requestDeletePage(page.id),

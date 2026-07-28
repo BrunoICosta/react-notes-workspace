@@ -1,12 +1,14 @@
+import { useTranslation } from 'react-i18next';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import { PageTreeItem } from './PageTreeItem';
 import styles from './PageTree.module.css';
 
 export function PageTree() {
   const rootIds = useWorkspaceStore((state) => state.rootIds);
+  const { t } = useTranslation('workspace');
 
   if (rootIds.length === 0) {
-    return <p className={styles.empty}>Nenhuma página por aqui ainda.</p>;
+    return <p className={styles.empty}>{t('sidebar.empty')}</p>;
   }
 
   return (

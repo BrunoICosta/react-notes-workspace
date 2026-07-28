@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ConfirmDialog } from '../../shared/ui/ConfirmDialog';
 import { Icon } from '../../shared/ui/Icon';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
@@ -6,25 +7,21 @@ import styles from './Sidebar.module.css';
 
 export function ResetWorkspaceButton() {
   const [confirming, setConfirming] = useState(false);
+  const { t } = useTranslation('workspace');
   const resetWorkspace = useWorkspaceStore((state) => state.resetWorkspace);
 
   return (
     <>
       <button type="button" className={styles.footerButton} onClick={() => setConfirming(true)}>
         <Icon name="reset" size={14} />
-        Restaurar exemplos
+        {t('reset.button')}
       </button>
       <ConfirmDialog
         open={confirming}
         tone="danger"
-        title="Restaurar as páginas de exemplo?"
-        description={
-          <p>
-            Todas as páginas atuais serão substituídas pelas páginas de boas-vindas. Essa ação não
-            pode ser desfeita.
-          </p>
-        }
-        confirmLabel="Restaurar"
+        title={t('reset.title')}
+        description={<p>{t('reset.description')}</p>}
+        confirmLabel={t('reset.confirm')}
         onCancel={() => setConfirming(false)}
         onConfirm={() => {
           resetWorkspace();

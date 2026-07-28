@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { getFavoriteIds } from '../workspace/model/tree';
 import { pageTitle } from '../workspace/store/selectors';
@@ -11,13 +12,14 @@ export function FavoritesList() {
   );
   const activePageId = useWorkspaceStore((state) => state.activePageId);
   const setActivePage = useWorkspaceStore((state) => state.setActivePage);
+  const { t } = useTranslation('workspace');
 
   if (favorites.length === 0) return null;
 
   return (
     <nav className={sidebarStyles.section} aria-labelledby="sidebar-favorites-heading">
       <h2 id="sidebar-favorites-heading" className={sidebarStyles.sectionTitle}>
-        Favoritos
+        {t('sidebar.favorites')}
       </h2>
       <ul className={styles.list}>
         {favorites.map((page) => (

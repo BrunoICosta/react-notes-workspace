@@ -1,4 +1,5 @@
 import { useState, type CSSProperties } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DropdownMenu, type MenuItem } from '../../shared/ui/DropdownMenu';
 import { Icon } from '../../shared/ui/Icon';
 import { useUiStore } from '../layout/uiStore';
@@ -27,6 +28,7 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
   const outdentPage = useWorkspaceStore((state) => state.outdentPage);
   const requestDeletePage = useUiStore((state) => state.requestDeletePage);
   const [renaming, setRenaming] = useState(false);
+  const { t } = useTranslation('workspace');
 
   if (!page) return null;
 
@@ -35,36 +37,36 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
   const expanded = hasChildren && !page.collapsed;
 
   const menuItems: MenuItem[] = [
-    { id: 'rename', label: 'Renomear', icon: 'pencil', onSelect: () => setRenaming(true) },
+    { id: 'rename', label: t('actions.rename'), icon: 'pencil', onSelect: () => setRenaming(true) },
     {
       id: 'subpage',
-      label: 'Adicionar subpágina',
+      label: t('actions.addSubpage'),
       icon: 'plus',
       onSelect: () => createPage({ parentId: pageId }),
     },
     {
       id: 'favorite',
-      label: page.favorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos',
+      label: page.favorite ? t('actions.removeFavorite') : t('actions.addFavorite'),
       icon: 'star',
       onSelect: () => toggleFavorite(pageId),
     },
     {
       id: 'indent',
-      label: 'Aninhar na página acima',
+      label: t('actions.indent'),
       icon: 'indent',
       disabled: !indentable,
       onSelect: () => indentPage(pageId),
     },
     {
       id: 'outdent',
-      label: 'Mover um nível acima',
+      label: t('actions.outdent'),
       icon: 'outdent',
       disabled: !outdentable,
       onSelect: () => outdentPage(pageId),
     },
     {
       id: 'delete',
-      label: 'Excluir',
+      label: t('actions.delete'),
       icon: 'trash',
       danger: true,
       onSelect: () => requestDeletePage(pageId),
@@ -82,7 +84,7 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
           type="button"
           className={styles.toggle}
           onClick={() => toggleCollapsed(pageId)}
-          aria-label={expanded ? `Recolher ${title}` : `Expandir ${title}`}
+          aria-label={expanded ? t('tree.collapse', { title }) : t('tree.expand', { title })}
           aria-expanded={hasChildren ? expanded : undefined}
           disabled={!hasChildren}
           data-expanded={expanded || undefined}
@@ -125,7 +127,7 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
         {!renaming && (
           <div className={styles.actions}>
             <DropdownMenu
-              label={`Ações da página ${title}`}
+              label={t('tree.actions', { title })}
               items={menuItems}
               triggerClassName={styles.action}
               triggerContent={<Icon name="more" size={14} />}
@@ -134,8 +136,8 @@ export function PageTreeItem({ pageId, depth }: PageTreeItemProps) {
               type="button"
               className={styles.action}
               onClick={() => createPage({ parentId: pageId })}
-              aria-label={`Adicionar subpágina em ${title}`}
-              title="Adicionar subpágina"
+              aria-label={t('tree.addSubpageTo', { title })}
+              title={t('actions.addSubpage')}
             >
               <Icon name="plus" size={14} />
             </button>

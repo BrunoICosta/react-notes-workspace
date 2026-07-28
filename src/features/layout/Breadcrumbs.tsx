@@ -1,4 +1,5 @@
 import { Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { getAncestors } from '../workspace/model/tree';
 import type { Page } from '../workspace/model/types';
@@ -16,12 +17,13 @@ const MAX_VISIBLE_ANCESTORS = 3;
 export function Breadcrumbs({ page }: BreadcrumbsProps) {
   const ancestors = useWorkspaceStore(useShallow((state) => getAncestors(state, page.id)));
   const setActivePage = useWorkspaceStore((state) => state.setActivePage);
+  const { t } = useTranslation('workspace');
 
   const collapsed = ancestors.length > MAX_VISIBLE_ANCESTORS;
   const visible = collapsed ? [ancestors[0], ...ancestors.slice(-2)] : ancestors;
 
   return (
-    <nav aria-label="Trilha de navegação" className={styles.nav}>
+    <nav aria-label={t('topbar.breadcrumbs')} className={styles.nav}>
       <ol className={styles.list}>
         {visible.map((ancestor, index) => (
           <Fragment key={ancestor.id}>

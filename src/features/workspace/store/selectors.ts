@@ -1,10 +1,13 @@
+import i18n from '../../../i18n';
 import type { Page } from '../model/types';
 import { useWorkspaceStore, type WorkspaceState } from './workspaceStore';
 
-export const UNTITLED_PAGE = 'Sem título';
-
+/**
+ * Display title of a page, with a localized placeholder for untitled pages.
+ * Components calling it also use `useTranslation`, so they re-render on language change.
+ */
 export function pageTitle(page: Pick<Page, 'title'>): string {
-  return page.title.trim() || UNTITLED_PAGE;
+  return page.title.trim() || i18n.t('untitled');
 }
 
 export function selectActivePage(state: WorkspaceState): Page | null {
