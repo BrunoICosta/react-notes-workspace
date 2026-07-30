@@ -1,8 +1,14 @@
 import { useCallback, useId, useMemo, useState, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Block } from '../workspace/model/types';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
-import type { BlockTypeConfig } from './blockConfig';
-import { detectSlashTrigger, filterBlockTypes, slashOptionId } from './blockMenu';
+import {
+  detectSlashTrigger,
+  filterBlockTypes,
+  slashOptionId,
+  type BlockMenuItem,
+} from './blockMenu';
+import { normalizeLanguage } from '../../i18n';
 import type { CaretTarget } from './caret';
 
 interface SlashState {
@@ -29,7 +35,12 @@ const MAX_QUERY_LENGTH = 30;
 export function useSlashMenu({ pageId, requestFocus }: UseSlashMenuOptions) {
   const [state, setState] = useState<SlashState | null>(null);
   const menuId = useId();
-  const items = useMemo(() => (state ? filterBlockTypes(state.query) : []), [state]);
+  const { i18n } = useTranslation();
+  const language = normalizeLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const items = useMemo(
+    () => (state ? filterBlockTypes(state.query, language) : []),
+    [state, language],
+  );
 
   const close = useCallback(() => setState(null), []);
 
@@ -58,7 +69,7 @@ export function useSlashMenu({ pageId, requestFocus }: UseSlashMenuOptions) {
   }, []);
 
   const select = useCallback(
-    (item: BlockTypeConfig) => {
+    (item: BlockMenuItem) => {
       if (!state) return;
       const store = useWorkspaceStore.getState();
       const block = store.pages[pageId]?.blocks.find((entry) => entry.id === state.blockId);

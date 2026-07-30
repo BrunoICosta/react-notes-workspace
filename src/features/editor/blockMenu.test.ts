@@ -30,6 +30,16 @@ describe('filterBlockTypes', () => {
   it('returns nothing for unknown terms', () => {
     expect(filterBlockTypes('xyz')).toEqual([]);
   });
+
+  it('matches commands in both languages and labels them in the active one', () => {
+    const [heading] = filterBlockTypes('heading', 'pt-BR');
+    expect(heading).toMatchObject({ type: 'heading1', label: 'Título 1' });
+
+    const english = filterBlockTypes('titulo', 'en');
+    expect(english.map((item) => item.label)).toEqual(['Heading 1', 'Heading 2', 'Heading 3']);
+    expect(filterBlockTypes('citação', 'en')[0]).toMatchObject({ type: 'quote', label: 'Quote' });
+    expect(filterBlockTypes('callout', 'pt-BR')[0]).toMatchObject({ label: 'Destaque' });
+  });
 });
 
 describe('detectSlashTrigger', () => {

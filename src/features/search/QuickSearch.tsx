@@ -1,4 +1,5 @@
 import { useId, useMemo, useState, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '../../shared/ui/Icon';
 import { Modal } from '../../shared/ui/Modal';
 import { useUiStore } from '../layout/uiStore';
@@ -19,6 +20,7 @@ interface QuickSearchDialogProps {
 
 function QuickSearchDialog({ onClose }: QuickSearchDialogProps) {
   const [query, setQuery] = useState('');
+  const { t } = useTranslation(['search', 'common']);
   const [activeIndex, setActiveIndex] = useState(0);
   const pages = useWorkspaceStore((state) => state.pages);
   const rootIds = useWorkspaceStore((state) => state.rootIds);
@@ -27,8 +29,11 @@ function QuickSearchDialog({ onClose }: QuickSearchDialogProps) {
   const listId = useId();
 
   const results = useMemo(
-    () => searchPages({ pages, rootIds, activePageId: null }, query),
-    [pages, rootIds, query],
+    () =>
+      searchPages({ pages, rootIds, activePageId: null }, query, {
+        untitledLabel: t('common:untitled'),
+      }),
+    [pages, rootIds, query, t],
   );
   const safeIndex = Math.min(activeIndex, Math.max(0, results.length - 1));
   const optionId = (index: number) => `${listId}-${index}`;
@@ -56,7 +61,7 @@ function QuickSearchDialog({ onClose }: QuickSearchDialogProps) {
   return (
     <Modal open onClose={onClose} labelledBy={titleId} placement="top" className={styles.dialog}>
       <h2 id={titleId} className="visually-hidden">
-        Buscar páginas
+        {t('title')}
       </h2>
       <div className={styles.inputRow}>
         <Icon name="search" size={18} />
@@ -68,8 +73,8 @@ function QuickSearchDialog({ onClose }: QuickSearchDialogProps) {
           aria-controls={listId}
           aria-autocomplete="list"
           aria-activedescendant={results.length > 0 ? optionId(safeIndex) : undefined}
-          aria-label="Buscar por título ou conteúdo"
-          placeholder="Buscar por título ou conteúdo…"
+          aria-label={t('inputLabel')}
+          placeholder={t('placeholder')}
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -84,10 +89,10 @@ function QuickSearchDialog({ onClose }: QuickSearchDialogProps) {
       </div>
 
       <div className={styles.sectionLabel} aria-hidden="true">
-        {hasQuery ? 'Resultados' : 'Editadas recentemente'}
+        {hasQuery ? t('results') : t('recent')}
       </div>
 
-      <ul id={listId} role="listbox" aria-label="Resultados da busca" className={styles.results}>
+      <ul id={listId} role="listbox" aria-label={t('resultsLabel')} className={styles.results}>
         {results.map((result, index) => (
           <li
             key={result.pageId}
@@ -120,17 +125,17 @@ function QuickSearchDialog({ onClose }: QuickSearchDialogProps) {
 
       {results.length === 0 && (
         <p className={styles.empty} role="status">
-          {hasQuery ? `Nenhuma página encontrada para “${query.trim()}”.` : 'Nenhuma página ainda.'}
+          {hasQuery ? t('noResults', { query: query.trim() }) : t('noPages')}
         </p>
       )}
 
       <footer className={styles.footer} aria-hidden="true">
         <span>
           <kbd className={styles.kbd}>↑</kbd>
-          <kbd className={styles.kbd}>↓</kbd> navegar
+          <kbd className={styles.kbd}>↓</kbd> {t('navigate')}
         </span>
         <span>
-          <kbd className={styles.kbd}>↵</kbd> abrir
+          <kbd className={styles.kbd}>↵</kbd> {t('open')}
         </span>
       </footer>
     </Modal>

@@ -1,10 +1,10 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { memo, useRef, type KeyboardEvent, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAutoResize } from '../../shared/hooks/useAutoResize';
 import { Icon } from '../../shared/ui/Icon';
 import type { Block } from '../workspace/model/types';
-import { BLOCK_CONFIG } from './blockConfig';
 import styles from './BlockEditor.module.css';
 
 export interface BlockRowProps {
@@ -34,7 +34,8 @@ function BlockRowComponent({
 }: BlockRowProps) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   useAutoResize(textareaRef, block.text);
-  const config = BLOCK_CONFIG[block.type];
+  const { t } = useTranslation('editor');
+  const label = t(`blocks.${block.type}.label`);
   const {
     attributes,
     listeners,
@@ -51,8 +52,8 @@ function BlockRowComponent({
         type="button"
         className={styles.gutterButton}
         onClick={() => onInsertBelow(block)}
-        aria-label="Inserir bloco abaixo"
-        title="Inserir bloco abaixo"
+        aria-label={t('insertBelow')}
+        title={t('insertBelow')}
         tabIndex={-1}
       >
         <Icon name="plus" size={14} />
@@ -62,10 +63,10 @@ function BlockRowComponent({
         type="button"
         className={styles.gutterButton}
         data-handle
-        title="Arraste para mover (ou Espaço e setas)"
+        title={t('dragHint')}
         {...attributes}
         {...listeners}
-        aria-label={`Mover bloco: ${config.label}`}
+        aria-label={t('moveBlock', { type: label })}
       >
         <Icon name="grip" size={14} />
       </button>
@@ -80,7 +81,7 @@ function BlockRowComponent({
           ref={(element) => registerRef(block.id, element)}
           className={styles.divider}
           role="separator"
-          aria-label="Divisor (Backspace para remover)"
+          aria-label={t('dividerLabel')}
           tabIndex={0}
           onKeyDown={(event) => onKeyDown(block, event)}
           onBlur={() => onBlur?.(block)}
@@ -98,7 +99,7 @@ function BlockRowComponent({
             className={styles.checkbox}
             checked={block.checked}
             onChange={() => onToggleTodo(block)}
-            aria-label={block.checked ? 'Marcar como pendente' : 'Marcar como concluída'}
+            aria-label={block.checked ? t('todo.markPending') : t('todo.markDone')}
           />
         )}
         {block.type === 'bulleted' && (
@@ -124,8 +125,8 @@ function BlockRowComponent({
           className={styles.input}
           value={block.text}
           rows={1}
-          placeholder={config.placeholder}
-          aria-label={config.label}
+          placeholder={t(`blocks.${block.type}.placeholder`)}
+          aria-label={label}
           spellCheck={block.type !== 'code'}
           onChange={(event) => onTextChange(block, event.target.value, event.target)}
           onKeyDown={(event) => onKeyDown(block, event)}

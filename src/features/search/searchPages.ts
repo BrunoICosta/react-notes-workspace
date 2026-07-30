@@ -42,12 +42,23 @@ function buildSnippet(text: string, index: number, length: number): SearchSnippe
   };
 }
 
-function toResult(ws: WorkspaceData, page: Page, matchedIn: SearchResult['matchedIn']) {
+export interface SearchOptions {
+  limit?: number;
+  /** Title shown for pages without one (localized by the caller). */
+  untitledLabel?: string;
+}
+
+function toResult(
+  ws: WorkspaceData,
+  page: Page,
+  matchedIn: SearchResult['matchedIn'],
+  untitled: string,
+) {
   return {
     pageId: page.id,
     icon: page.icon,
-    title: page.title.trim() || 'Sem título',
-    path: getAncestors(ws, page.id).map((ancestor) => ancestor.title.trim() || 'Sem título'),
+    title: page.title.trim() || untitled,
+    path: getAncestors(ws, page.id).map((ancestor) => ancestor.title.trim() || untitled),
     matchedIn,
   };
 }
@@ -56,7 +67,11 @@ function toResult(ws: WorkspaceData, page: Page, matchedIn: SearchResult['matche
  * Searches page titles and block contents (accent and case insensitive).
  * Title matches rank first; an empty query lists the most recently edited pages.
  */
-export function searchPages(ws: WorkspaceData, query: string, limit = 20): SearchResult[] {
+export function searchPages(
+  ws: WorkspaceData,
+  query: string,
+  { limit = 20, untitledLabel = 'Sem título' }: SearchOptions = {},
+): SearchResult[] {
   const pages = Object.values(ws.pages);
   const needle = foldText(query.trim());
 
@@ -64,7 +79,7 @@ export function searchPages(ws: WorkspaceData, query: string, limit = 20): Searc
     return [...pages]
       .sort((a, b) => b.updatedAt - a.updatedAt)
       .slice(0, limit)
-      .map((page) => toResult(ws, page, 'recent'));
+      .map((page) => toResult(ws, page, 'recent', untitledLabel));
   }
 
   const titleMatches: Array<SearchResult & { position: number }> = [];
@@ -73,14 +88,14 @@ export function searchPages(ws: WorkspaceData, query: string, limit = 20): Searc
   for (const page of pages) {
     const titleIndex = foldText(page.title).indexOf(needle);
     if (titleIndex !== -1) {
-      titleMatches.push({ ...toResult(ws, page, 'title'), position: titleIndex });
+      titleMatches.push({ ...toResult(ws, page, 'title', untitledLabel), position: titleIndex });
       continue;
     }
     for (const block of page.blocks) {
       const index = foldText(block.text).indexOf(needle);
       if (index !== -1) {
         contentMatches.push({
-          ...toResult(ws, page, 'content'),
+          ...toResult(ws, page, 'content', untitledLabel),
           snippet: buildSnippet(block.text, index, needle.length),
         });
         break;

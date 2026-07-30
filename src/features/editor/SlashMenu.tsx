@@ -1,15 +1,15 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import type { BlockTypeConfig } from './blockConfig';
-import { slashOptionId } from './blockMenu';
+import { useTranslation } from 'react-i18next';
+import { slashOptionId, type BlockMenuItem } from './blockMenu';
 import styles from './SlashMenu.module.css';
 
 interface SlashMenuProps {
   id: string;
-  items: BlockTypeConfig[];
+  items: BlockMenuItem[];
   activeIndex: number;
   anchor: HTMLElement | null;
-  onSelect: (item: BlockTypeConfig) => void;
+  onSelect: (item: BlockMenuItem) => void;
   onHover: (index: number) => void;
 }
 
@@ -19,6 +19,7 @@ const MAX_HEIGHT = 320;
 /** Floating listbox of block types. Keyboard handling lives in the editor textarea. */
 export function SlashMenu({ id, items, activeIndex, anchor, onSelect, onHover }: SlashMenuProps) {
   const listRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation('editor');
   const [position, setPosition] = useState({ top: -9999, left: -9999 });
 
   useLayoutEffect(() => {
@@ -55,16 +56,16 @@ export function SlashMenu({ id, items, activeIndex, anchor, onSelect, onHover }:
       ref={listRef}
       id={id}
       role="listbox"
-      aria-label="Tipos de bloco"
+      aria-label={t('slash.label')}
       className={styles.menu}
       style={{ top: position.top, left: position.left }}
     >
       {items.length === 0 ? (
-        <div className={styles.empty}>Nenhum bloco encontrado</div>
+        <div className={styles.empty}>{t('slash.empty')}</div>
       ) : (
         <>
           <div className={styles.heading} aria-hidden="true">
-            Blocos básicos
+            {t('slash.section')}
           </div>
           {items.map((item, index) => (
             <div

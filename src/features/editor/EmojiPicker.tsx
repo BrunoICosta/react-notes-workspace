@@ -1,5 +1,6 @@
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { useAnchoredPosition, useDismiss } from '../../shared/hooks/useFloating';
 import styles from './EmojiPicker.module.css';
 
@@ -23,6 +24,7 @@ interface EmojiPickerProps {
 
 export function EmojiPicker({ value, onChange, triggerClassName }: EmojiPickerProps) {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation('editor');
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const position = useAnchoredPosition(open, triggerRef, panelRef);
@@ -73,8 +75,8 @@ export function EmojiPicker({ value, onChange, triggerClassName }: EmojiPickerPr
         ref={triggerRef}
         type="button"
         className={triggerClassName}
-        aria-label="Alterar ícone da página"
-        title="Alterar ícone"
+        aria-label={t('icon.change')}
+        title={t('icon.changeShort')}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
@@ -86,19 +88,19 @@ export function EmojiPicker({ value, onChange, triggerClassName }: EmojiPickerPr
           <div
             ref={panelRef}
             role="dialog"
-            aria-label="Escolher ícone"
+            aria-label={t('icon.choose')}
             className={styles.panel}
             style={{ top: position.top, left: position.left }}
             onKeyDown={handleKeyDown}
           >
             <div className={styles.header}>
-              <span className={styles.heading}>Ícone</span>
+              <span className={styles.heading}>{t('icon.heading')}</span>
               <button
                 type="button"
                 className={styles.random}
                 onClick={() => choose(PAGE_EMOJIS[Math.floor(Math.random() * PAGE_EMOJIS.length)])}
               >
-                Aleatório
+                {t('icon.random')}
               </button>
             </div>
             <div className={styles.grid}>
@@ -108,7 +110,7 @@ export function EmojiPicker({ value, onChange, triggerClassName }: EmojiPickerPr
                   type="button"
                   className={styles.emoji}
                   data-emoji
-                  aria-label={`Usar ${emoji}`}
+                  aria-label={t('icon.use', { emoji })}
                   aria-pressed={emoji === value}
                   tabIndex={
                     emoji === value || (index === 0 && !PAGE_EMOJIS.includes(value)) ? 0 : -1

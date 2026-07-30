@@ -11,19 +11,21 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 
 /** Blocks only move vertically. */
 export const restrictToVerticalAxis: Modifier = ({ transform }) => ({ ...transform, x: 0 });
 
-export const screenReaderInstructions: ScreenReaderInstructions = {
-  draggable:
-    'Para mover o bloco, pressione Espaço. Use as setas para cima e para baixo para escolher a nova posição, Espaço para soltar ou Esc para cancelar.',
-};
-
 /** Sensors, announcements and the drop handler for reordering the blocks of a page. */
 export function useBlockDnd(pageId: string) {
   const moveBlock = useWorkspaceStore((state) => state.moveBlock);
+  const { t } = useTranslation('editor');
+
+  const screenReaderInstructions = useMemo<ScreenReaderInstructions>(
+    () => ({ draggable: t('dnd.instructions') }),
+    [t],
+  );
 
   const sensors = useSensors(
     // A small distance keeps clicks on the handle from starting a drag.
@@ -35,16 +37,16 @@ export function useBlockDnd(pageId: string) {
     const position = (id: UniqueIdentifier | undefined) => {
       const blocks = useWorkspaceStore.getState().pages[pageId]?.blocks ?? [];
       const index = blocks.findIndex((block) => block.id === id);
-      return `${index + 1} de ${blocks.length}`;
+      return t('dnd.position', { index: index + 1, total: blocks.length });
     };
     return {
-      onDragStart: ({ active }) => `Bloco na posição ${position(active.id)} selecionado.`,
-      onDragOver: ({ over }) => (over ? `Sobre a posição ${position(over.id)}.` : undefined),
+      onDragStart: ({ active }) => t('dnd.picked', { position: position(active.id) }),
+      onDragOver: ({ over }) => (over ? t('dnd.over', { position: position(over.id) }) : undefined),
       onDragEnd: ({ over }) =>
-        over ? `Bloco movido para a posição ${position(over.id)}.` : 'Bloco solto.',
-      onDragCancel: () => 'Movimento cancelado.',
+        over ? t('dnd.dropped', { position: position(over.id) }) : t('dnd.droppedOutside'),
+      onDragCancel: () => t('dnd.cancelled'),
     };
-  }, [pageId]);
+  }, [pageId, t]);
 
   const handleDragEnd = useCallback(
     ({ active, over }: DragEndEvent) => {
@@ -53,5 +55,5 @@ export function useBlockDnd(pageId: string) {
     [moveBlock, pageId],
   );
 
-  return { sensors, announcements, handleDragEnd };
+  return { sensors, announcements, screenReaderInstructions, handleDragEnd };
 }

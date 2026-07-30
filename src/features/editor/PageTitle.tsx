@@ -1,4 +1,5 @@
 import type { KeyboardEvent, RefObject } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAutoResize } from '../../shared/hooks/useAutoResize';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import styles from './PageView.module.css';
@@ -13,6 +14,7 @@ interface PageTitleProps {
 
 export function PageTitle({ pageId, title, inputRef, onExitBottom }: PageTitleProps) {
   const renamePage = useWorkspaceStore((state) => state.renamePage);
+  const { t } = useTranslation(['editor', 'common']);
   useAutoResize(inputRef, title);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -31,8 +33,8 @@ export function PageTitle({ pageId, title, inputRef, onExitBottom }: PageTitlePr
       className={styles.title}
       value={title}
       rows={1}
-      placeholder="Sem título"
-      aria-label="Título da página"
+      placeholder={t('common:untitled')}
+      aria-label={t('pageTitle')}
       maxLength={200}
       onChange={(event) => renamePage(pageId, event.target.value.replace(/\n/g, ' '))}
       onKeyDown={handleKeyDown}

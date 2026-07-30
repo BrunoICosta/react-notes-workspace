@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Page } from '../workspace/model/types';
+import { pageTitle } from '../workspace/store/selectors';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
 import { BlockEditor, type BlockEditorHandle } from './BlockEditor';
 import { focusWithCaret } from './caret';
@@ -17,6 +19,7 @@ function isBlankPage(page: Page): boolean {
 
 export function PageView({ page }: PageViewProps) {
   const setPageIcon = useWorkspaceStore((state) => state.setPageIcon);
+  useTranslation(); // re-render the localized untitled placeholder on language change
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const editorRef = useRef<BlockEditorHandle>(null);
   const startsBlank = useRef(isBlankPage(page));
@@ -34,7 +37,7 @@ export function PageView({ page }: PageViewProps) {
           onChange={(icon) => setPageIcon(page.id, icon)}
           triggerClassName={styles.icon}
         />
-        <h1 className="visually-hidden">{page.title.trim() || 'Sem título'}</h1>
+        <h1 className="visually-hidden">{pageTitle(page)}</h1>
         <PageTitle
           pageId={page.id}
           title={page.title}

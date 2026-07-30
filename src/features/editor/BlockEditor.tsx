@@ -9,6 +9,7 @@ import {
   type KeyboardEvent,
   type Ref,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getListNumber } from '../workspace/model/blocks';
 import type { Block, BlockType, Page } from '../workspace/model/types';
 import { useWorkspaceStore } from '../workspace/store/workspaceStore';
@@ -22,7 +23,7 @@ import {
 } from './caret';
 import { detectShortcut } from './markdownShortcuts';
 import { SlashMenu } from './SlashMenu';
-import { restrictToVerticalAxis, screenReaderInstructions, useBlockDnd } from './useBlockDnd';
+import { restrictToVerticalAxis, useBlockDnd } from './useBlockDnd';
 import { useSlashMenu } from './useSlashMenu';
 import styles from './BlockEditor.module.css';
 
@@ -56,6 +57,7 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
   const pageId = page.id;
   const elements = useRef(new Map<string, HTMLElement>());
   const pendingFocus = useRef<FocusRequest | null>(null);
+  const { t } = useTranslation('editor');
 
   const insertBlock = useWorkspaceStore((state) => state.insertBlock);
   const updateBlockText = useWorkspaceStore((state) => state.updateBlockText);
@@ -304,7 +306,10 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
         sensors={dnd.sensors}
         collisionDetection={closestCenter}
         modifiers={[restrictToVerticalAxis]}
-        accessibility={{ announcements: dnd.announcements, screenReaderInstructions }}
+        accessibility={{
+          announcements: dnd.announcements,
+          screenReaderInstructions: dnd.screenReaderInstructions,
+        }}
         onDragStart={closeSlashMenu}
         onDragEnd={dnd.handleDragEnd}
       >
@@ -343,11 +348,9 @@ export function BlockEditor({ page, onExitTop, ref }: BlockEditorProps) {
         type="button"
         className={styles.tail}
         onClick={appendParagraph}
-        aria-label="Adicionar bloco no fim da página"
+        aria-label={t('addBlockAtEnd')}
       >
-        {page.blocks.length === 0 && (
-          <span className={styles.tailHint}>Clique para começar a escrever…</span>
-        )}
+        {page.blocks.length === 0 && <span className={styles.tailHint}>{t('startWriting')}</span>}
       </button>
     </div>
   );
