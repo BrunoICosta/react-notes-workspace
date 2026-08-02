@@ -45,7 +45,7 @@ interface está disponível em português (padrão) e inglês.
   (referências quebradas e páginas órfãs são reparadas em vez de quebrar a aplicação).
 - **Páginas de boas-vindas** que explicam os recursos, com opção de restaurá-las.
 - **Responsivo:** em telas pequenas a barra lateral vira uma gaveta (drawer) com foco gerenciado.
-- **Português e inglês:** seletor de idioma no topo; o menu `/` encontra os blocos nos dois
+- **Português e inglês:** seletor de idioma com bandeiras no topo; o menu `/` encontra os blocos nos dois
   idiomas e as datas seguem o idioma ativo.
 
 ## Stack

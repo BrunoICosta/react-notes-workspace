@@ -1,49 +1,57 @@
-/*
- * The native select stays fully functional and accessible; it is stretched invisibly
- * over a small "PT"/"EN" badge so the top bar stays compact.
- */
-.switcher {
-  position: relative;
+.group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 2px;
+}
+
+.option {
   display: inline-grid;
   place-items: center;
-  height: 30px;
-  min-width: 36px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
   border-radius: var(--radius-md);
-  color: var(--color-text-muted);
+  background: transparent;
+  transition: background-color var(--duration-fast) ease;
+}
+
+.option svg {
+  display: block;
+  width: 24px;
+  height: auto;
+  border-radius: 3px;
+  /* Thin edge so the white of the US flag stays visible on light backgrounds. */
+  box-shadow: 0 0 0 1px var(--color-border-strong);
+  opacity: 0.55;
+  filter: grayscale(0.7);
   transition:
-    background-color var(--duration-fast) ease,
-    color var(--duration-fast) ease;
+    opacity var(--duration-fast) ease,
+    filter var(--duration-fast) ease,
+    box-shadow var(--duration-fast) ease;
 }
 
-.switcher:hover {
+.option:hover {
   background: var(--color-bg-hover);
-  color: var(--color-text);
 }
 
-.switcher:focus-within {
+.option:hover svg,
+.option:focus-visible svg {
+  opacity: 1;
+  filter: none;
+}
+
+/* Active language: full color plus a ring, so it is not signalled by color alone. */
+.option[aria-checked='true'] svg {
+  opacity: 1;
+  filter: none;
+  box-shadow:
+    0 0 0 2px var(--color-bg),
+    0 0 0 4px var(--color-accent);
+}
+
+.option:focus-visible {
   outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-}
-
-.badge {
-  padding: 0 6px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  pointer-events: none;
-}
-
-.select {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.select option {
-  color: var(--color-text);
-  background: var(--color-bg-elevated);
+  outline-offset: 0;
 }
