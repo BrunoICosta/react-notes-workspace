@@ -1,10 +1,13 @@
 # Notes Workspace
 
+🇧🇷 Português · [🇺🇸 English](./README.en.md)
+
 Workspace de notas inspirado no Notion, feito com React 19, TypeScript e Zustand. As páginas formam
 uma árvore aninhada na barra lateral e cada página é um editor de blocos (texto, títulos, tarefas,
 listas, citação, código, divisor e destaque), com menu de comandos por `/`, atalhos de Markdown,
 reordenação por arrastar e soltar (inclusive pelo teclado) e busca rápida com `Ctrl/⌘ + K`. Tudo
-fica salvo no `localStorage` do navegador, com versionamento e migração do formato salvo.
+fica salvo no `localStorage` do navegador, com versionamento e migração do formato salvo. A
+interface está disponível em português (padrão) e inglês.
 
 **Demo:** https://brunoicosta.github.io/react-notes-workspace/
 
@@ -33,7 +36,7 @@ fica salvo no `localStorage` do navegador, com versionamento e migração do for
   entre blocos e o título.
 - **Atalhos de Markdown:** `#`, `##`, `###`, `-`, `1.`, `[]`, `>`, ` ``` ` e `---`.
 - **Arrastar e soltar:** reordenação de blocos com dnd-kit pela alça, com mouse, toque ou teclado
-  (`Espaço` + setas) e anúncios para leitores de tela em português.
+  (`Espaço` + setas) e anúncios para leitores de tela no idioma ativo.
 - **Busca rápida (`Ctrl/⌘ + K`):** títulos e conteúdo, sem diferenciar acentos, com trecho
   destacado e o caminho da página.
 - **Trilha de navegação** (breadcrumbs) que se resume em telas pequenas ou caminhos longos.
@@ -42,20 +45,23 @@ fica salvo no `localStorage` do navegador, com versionamento e migração do for
   (referências quebradas e páginas órfãs são reparadas em vez de quebrar a aplicação).
 - **Páginas de boas-vindas** que explicam os recursos, com opção de restaurá-las.
 - **Responsivo:** em telas pequenas a barra lateral vira uma gaveta (drawer) com foco gerenciado.
+- **Português e inglês:** seletor de idioma no topo; o menu `/` encontra os blocos nos dois
+  idiomas e as datas seguem o idioma ativo.
 
 ## Stack
 
-| Tecnologia                                         | Versão          |
-| -------------------------------------------------- | --------------- |
-| React / React DOM                                  | 19.2            |
-| TypeScript (strict)                                | 6.0             |
-| Vite + @vitejs/plugin-react                        | 8.1 / 6.0       |
-| Zustand (`persist`)                                | 5.0             |
-| Immer                                              | 11.1            |
-| @dnd-kit/core / @dnd-kit/sortable                  | 6.3 / 10.0      |
-| Vitest + Testing Library + jsdom                   | 4.1 / 16.3 / 29 |
-| ESLint (typescript-eslint, react-hooks) + Prettier | 10 / 3.9        |
-| CSS Modules + variáveis CSS                        | —               |
+| Tecnologia                                         | Versão            |
+| -------------------------------------------------- | ----------------- |
+| React / React DOM                                  | 19.2              |
+| TypeScript (strict)                                | 6.0               |
+| Vite + @vitejs/plugin-react                        | 8.1 / 6.0         |
+| Zustand (`persist`)                                | 5.0               |
+| Immer                                              | 11.1              |
+| @dnd-kit/core / @dnd-kit/sortable                  | 6.3 / 10.0        |
+| Vitest + Testing Library + jsdom                   | 4.1 / 16.3 / 29   |
+| ESLint (typescript-eslint, react-hooks) + Prettier | 10 / 3.9          |
+| i18next / react-i18next / languagedetector         | 26.3 / 17.0 / 8.2 |
+| CSS Modules + variáveis CSS                        | —                 |
 
 ## Arquitetura e decisões
 
@@ -83,6 +89,34 @@ fica salvo no `localStorage` do navegador, com versionamento e migração do for
   combobox na busca), diálogos prendem o foco e devolvem para quem os abriu, o resto da página fica
   `inert` com a gaveta aberta e há um link "pular para o conteúdo".
 
+## Internacionalização
+
+A interface usa [i18next](https://www.i18next.com/) com `react-i18next` e
+`i18next-browser-languagedetector`. Idiomas suportados: **pt-BR** (padrão) e **en**.
+
+- **Detecção:** escolha salva no `localStorage` (`notes-workspace:language`) > idioma do navegador
+  (`pt*` vira `pt-BR`, qualquer outro vira `en`) > `pt-BR`. O seletor no topo da tela salva a escolha
+  e o atributo `<html lang>` acompanha o idioma ativo.
+- **Recursos tipados:** um arquivo TypeScript por namespace (`common`, `workspace`, `editor`,
+  `search`) em `src/i18n/locales/<idioma>/`. O pt-BR é a fonte; os outros idiomas usam o tipo
+  `Translation<typeof fonte>`, então faltar ou sobrar uma chave quebra o `tsc`. As chaves usadas em
+  `t()` também são verificadas via `CustomTypeOptions`.
+- **Formatação:** datas usam `Intl.DateTimeFormat` com o idioma ativo; plurais usam as regras do
+  i18next (`_one`/`_other`).
+- **Menu `/`:** os rótulos aparecem no idioma ativo, mas a busca considera rótulos e palavras-chave
+  de todos os idiomas (`/heading` funciona em português e `/titulo` em inglês).
+- **Páginas de exemplo:** são criadas no idioma ativo na primeira visita (ou ao restaurar os
+  exemplos). Páginas que já existem não são traduzidas ao trocar de idioma, porque são conteúdo do
+  usuário.
+
+**Adicionar um idioma** (ex.: `es`):
+
+1. Crie `src/i18n/locales/es/` com os mesmos namespaces, tipando cada um com `Translation<...>`.
+2. Registre o idioma em `SUPPORTED_LANGUAGES` e em `resources` (`src/i18n/resources.ts`) e ajuste
+   `normalizeLanguage` em `src/i18n/index.ts`.
+3. Adicione o nome em `common.language.names` e, se quiser, páginas de exemplo em
+   `src/features/workspace/seed/`.
+
 ## Como rodar
 
 Requisitos: Node.js 22+ e npm 10+.
@@ -102,15 +136,16 @@ npm run preview      # serve o build de produção
 ```
 src/
 ├── app/                    # componente raiz
+├── i18n/                   # configuração do i18next e traduções por namespace
 ├── features/
 │   ├── editor/             # página, editor de blocos, menu "/", atalhos, drag and drop
 │   ├── layout/             # shell, topbar, breadcrumbs, estado de UI
-│   ├── preferences/        # tema claro/escuro
+│   ├── preferences/        # tema claro/escuro e seletor de idioma
 │   ├── search/             # busca rápida e função de busca
 │   ├── sidebar/            # árvore de páginas, favoritos, diálogos
 │   └── workspace/
 │       ├── model/          # tipos e operações puras de árvore e blocos
-│       ├── seed/           # páginas de boas-vindas
+│       ├── seed/           # páginas de boas-vindas (pt-BR e en)
 │       └── store/          # store Zustand, seletores e migrações
 ├── shared/
 │   ├── hooks/              # atalhos globais, media query, popovers, auto-resize
