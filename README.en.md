@@ -8,7 +8,7 @@ divider and callout) with a `/` command menu, Markdown shortcuts, drag and drop 
 included) and quick search with `Ctrl/⌘ + K`. Everything is stored in the browser's `localStorage`
 with a versioned, migrated schema. The UI is available in Portuguese (default) and English.
 
-**Demo:** https://brunoicosta.github.io/react-notes-workspace/
+**Demo:** https://portfolio.brunoisaac.dev/react-notes-workspace/
 
 ![Welcome page in the light theme](docs/screenshot.png)
 
@@ -58,7 +58,14 @@ npm run dev      # http://localhost:5173
 npm test         # Vitest
 npm run lint     # ESLint
 npm run build    # type check + production build
+npm run build:cf # same build with the /react-notes-workspace/ base (used for deploy)
 ```
+
+## Deploy
+
+Published on Cloudflare (Workers static assets) at https://portfolio.brunoisaac.dev/react-notes-workspace/ by the pipeline of
+the [portfolio](https://github.com/BrunoICosta/portfolio) repository, which runs `npm run build:cf`
+and ships the `dist/` folder. This repository only keeps CI (lint, format, tests and build).
 
 ## Author
 

@@ -9,7 +9,7 @@ reordenação por arrastar e soltar (inclusive pelo teclado) e busca rápida com
 fica salvo no `localStorage` do navegador, com versionamento e migração do formato salvo. A
 interface está disponível em português (padrão) e inglês.
 
-**Demo:** https://brunoicosta.github.io/react-notes-workspace/
+**Demo:** https://portfolio.brunoisaac.dev/react-notes-workspace/
 
 ![Página de boas-vindas no tema claro](docs/screenshot.png)
 
@@ -128,6 +128,7 @@ npm test             # testes unitários e de componentes (Vitest)
 npm run lint         # ESLint
 npm run format       # Prettier
 npm run build        # checagem de tipos + build de produção em dist/
+npm run build:cf     # mesmo build com base /react-notes-workspace/ (usado no deploy)
 npm run preview      # serve o build de produção
 ```
 
@@ -154,6 +155,12 @@ src/
 ├── styles/                 # tokens e estilos globais
 └── test/                   # setup do Vitest
 ```
+
+## Deploy
+
+Publicado na Cloudflare (Workers static assets) em https://portfolio.brunoisaac.dev/react-notes-workspace/ pelo pipeline do
+repositório [portfolio](https://github.com/BrunoICosta/portfolio), que roda `npm run build:cf` e
+publica a pasta `dist/`. Este repositório mantém apenas o CI (lint, formatação, testes e build).
 
 ## Próximos passos
 
