@@ -26,9 +26,9 @@ function buildWorkspace() {
 
 describe('foldText', () => {
   it('keeps the same length as the input', () => {
-    const text = 'Pastéis de Belém — ÁÇÃO';
+    const text = 'Pastéis de Belém: ÁÇÃO';
     expect(foldText(text)).toHaveLength(text.length);
-    expect(foldText(text)).toBe('pasteis de belem — acao');
+    expect(foldText(text)).toBe('pasteis de belem: acao');
   });
 });
 

@@ -69,4 +69,4 @@ and ships the `dist/` folder. This repository only keeps CI (lint, format, tests
 
 ## Author
 
-Bruno Vinicius Isaac Costa — https://github.com/BrunoICosta · [MIT License](./LICENSE)
+Bruno Vinicius Isaac Costa Â· https://github.com/BrunoICosta · [MIT License](./LICENSE)

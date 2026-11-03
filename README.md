@@ -61,7 +61,7 @@ interface está disponível em português (padrão) e inglês.
 | Vitest + Testing Library + jsdom                   | 4.1 / 16.3 / 29   |
 | ESLint (typescript-eslint, react-hooks) + Prettier | 10 / 3.9          |
 | i18next / react-i18next / languagedetector         | 26.3 / 17.0 / 8.2 |
-| CSS Modules + variáveis CSS                        | —                 |
+| CSS Modules + variáveis CSS                        | ,                 |
 
 ## Arquitetura e decisões
 
@@ -172,6 +172,6 @@ publica a pasta `dist/`. Este repositório mantém apenas o CI (lint, formataç�
 
 ## Autor
 
-Bruno Vinicius Isaac Costa — https://github.com/BrunoICosta
+Bruno Vinicius Isaac Costa Â· https://github.com/BrunoICosta
 
 Licença [MIT](./LICENSE).
