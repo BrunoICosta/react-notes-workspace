@@ -88,7 +88,7 @@ describe('workspace store', () => {
     store().resetWorkspace();
 
     expect(store().pages[store().activePageId as string].title).toBe(
-      'Bem-vindo ao Notes Workspace',
+      'Bem-vindo ao Espaço de Notas',
     );
     expect(Object.values(store().pages).some((page) => page.title === 'Temporária')).toBe(false);
   });

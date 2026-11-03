@@ -95,7 +95,7 @@ export const SEED_PAGES_PT_BR: PageSpec[] = [
   {
     id: 'seed-welcome',
     icon: '👋',
-    title: 'Bem-vindo ao Notes Workspace',
+    title: 'Bem-vindo ao Espaço de Notas',
     favorite: true,
     blocks: [
       [

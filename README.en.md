@@ -2,7 +2,7 @@
 
 [🇧🇷 Português](./README.md) · 🇺🇸 English
 
-A Notion-inspired notes workspace built with React 19, TypeScript and Zustand. Pages form a nested
+A Notion-inspired notes workspace (called _Espaço de Notas_ in Portuguese) built with React 19, TypeScript and Zustand. Pages form a nested
 tree in the sidebar and every page is a block editor (text, headings, to-dos, lists, quote, code,
 divider and callout) with a `/` command menu, Markdown shortcuts, drag and drop reordering (keyboard
 included) and quick search with `Ctrl/⌘ + K`. Everything is stored in the browser's `localStorage`

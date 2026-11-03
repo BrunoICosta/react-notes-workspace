@@ -1,8 +1,8 @@
-# Notes Workspace
+# Espaço de Notas
 
 🇧🇷 Português · [🇺🇸 English](./README.en.md)
 
-Workspace de notas inspirado no Notion, feito com React 19, TypeScript e Zustand. As páginas formam
+Workspace de notas inspirado no Notion (em inglês, _Notes Workspace_), feito com React 19, TypeScript e Zustand. As páginas formam
 uma árvore aninhada na barra lateral e cada página é um editor de blocos (texto, títulos, tarefas,
 listas, citação, código, divisor e destaque), com menu de comandos por `/`, atalhos de Markdown,
 reordenação por arrastar e soltar (inclusive pelo teclado) e busca rápida com `Ctrl/⌘ + K`. Tudo

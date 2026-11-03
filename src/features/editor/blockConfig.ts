@@ -14,6 +14,6 @@ export const BLOCK_GLYPHS: Record<BlockType, string> = {
   numbered: '1.',
   quote: '❝',
   code: '</>',
-  divider: '—',
+  divider: '─',
   callout: '💡',
 };

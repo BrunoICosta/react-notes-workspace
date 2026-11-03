@@ -37,14 +37,16 @@ describe('language detection', () => {
 });
 
 describe('app instance', () => {
-  it('persists the choice and updates <html lang>', async () => {
+  it('persists the choice and updates <html lang> and the document title', async () => {
     await i18n.changeLanguage('en');
     expect(localStorage.getItem(LANGUAGE_STORAGE_KEY)).toBe('en');
     expect(document.documentElement.lang).toBe('en');
     expect(i18n.t('untitled')).toBe('Untitled');
+    expect(document.title).toBe('Notes Workspace');
 
     await i18n.changeLanguage('pt-BR');
     expect(document.documentElement.lang).toBe('pt-BR');
     expect(i18n.t('untitled')).toBe('Sem título');
+    expect(document.title).toBe('Espaço de Notas');
   });
 });

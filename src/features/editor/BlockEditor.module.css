@@ -269,3 +269,10 @@
 .input:focus-visible {
   outline: none;
 }
+
+/* iOS Safari zooms into focused fields under 16px and never zooms back. */
+@media (max-width: 768px), (pointer: coarse) {
+  .row[data-type='code'] .input {
+    font-size: 16px;
+  }
+}

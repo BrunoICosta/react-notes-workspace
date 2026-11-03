@@ -42,7 +42,7 @@ export function Sidebar({ mobile = false, open = false, onClose }: SidebarProps)
     >
       <header className={styles.header}>
         <span className={styles.logo} aria-hidden="true">
-          N
+          {t('common:appName').charAt(0)}
         </span>
         <span className={styles.workspaceName}>{t('common:appName')}</span>
         {mobile && (

@@ -28,6 +28,7 @@ export function isLanguage(value: string): value is Language {
 function syncDocument(instance: I18nInstance): void {
   const language = normalizeLanguage(instance.resolvedLanguage ?? instance.language);
   document.documentElement.lang = language;
+  document.title = instance.t('common:appName', { lng: language });
   document
     .querySelector('meta[name="description"]')
     ?.setAttribute('content', instance.t('common:metaDescription', { lng: language }));

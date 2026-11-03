@@ -69,3 +69,15 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+ * Safety net for iOS Safari, which zooms into focused fields under 16px. Components
+ * that style their own fields also bump them on small/touch screens.
+ */
+@media (max-width: 768px), (pointer: coarse) {
+  input:not([type='checkbox'], [type='radio']),
+  select,
+  textarea {
+    font-size: max(16px, 1rem);
+  }
+}

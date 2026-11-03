@@ -1,5 +1,5 @@
 export const common = {
-  appName: 'Notes Workspace',
+  appName: 'Espaço de Notas',
   metaDescription:
     'Workspace de notas inspirado no Notion: páginas aninhadas, editor de blocos, comando barra e busca rápida.',
   untitled: 'Sem título',
